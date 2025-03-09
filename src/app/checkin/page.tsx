@@ -1,71 +1,109 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const fetchUserData = async (regId: string) => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/verifyregisteration?regId=${regId}`, {
-      cache: "no-store",
-    });
+const CheckInContent = () => {
+  const searchParams = useSearchParams();
+  const regId = searchParams.get("regId");
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<{
+    success: boolean;
+    message: string;
+    guest?: {
+      name: string;
+      email: string;
+      whatsapp: string;
+      additionalMembers: number;
+      checkedIn: boolean;
+    };
+  } | null>(null);
 
-    if (!response.ok) return null;
-    
-    return await response.json();
-  } catch {
-    return null;
-  }
-};
+  useEffect(() => {
+    if (!regId) return;
 
-const CheckInPage = async ({ searchParams }: { searchParams: { regId?: string } }) => {
-  const regId = searchParams?.regId;
+    const verifyRegistration = async () => {
+      try {
+        const response = await fetch(`/api/verifyRegisteration?regId=${regId}`);
+        const result = await response.json();
+        setUserData(result);
+      } catch {
+        setUserData({ success: false, message: "Error verifying registration" });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!regId) return notFound();
+    verifyRegistration();
+  }, [regId]);
 
-  const userData = await fetchUserData(regId);
+  const handleCheckIn = async () => {
+    if (!regId) return;
+    try {
+      const response = await fetch(`/api/checkin`, {
+        method: "POST",
+        body: JSON.stringify({ regId }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-  if (!userData?.success) {
-    return (
-      <div className="p-6 flex justify-center items-center h-[90dvh]">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader>
-            <CardTitle>Event Check-In</CardTitle>
-            <CardDescription>We warm welcome you to the event</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-red-500">{userData?.message || "User not found"}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+      const result = await response.json();
 
-  const { name, email, whatsapp, additionalMembers, checkedIn } = userData.guest;
+      if (result.success) {
+        setUserData((prev) => prev && {
+          ...prev,
+          guest: {
+            ...prev.guest!,
+            checkedIn: true,
+          },
+        });
+      } else {
+        console.error("Check-in failed", result.message);
+      }
+    } catch (error) {
+      console.error("Check-in error:", error);
+    }
+  };
 
   return (
-    <div className="p-6 flex justify-center items-center h-[90dvh]">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader>
-          <CardTitle>Event Check-In</CardTitle>
-          <CardDescription>We warm welcome you to the event</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <Card className="w-full max-w-md shadow-lg">
+      <CardHeader>
+        <CardTitle>Event Check-In</CardTitle>
+        <CardDescription>We warmly welcome you to the event</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <p>Checking registration...</p>
+        ) : userData?.success && userData.guest ? (
           <div className="space-y-3">
-            <p><strong>Name:</strong> {name}</p>
-            <p><strong>Email:</strong> {email}</p>
-            <p><strong>Phone:</strong> {whatsapp}</p>
-            <p><strong>Additional Members:</strong> {additionalMembers}</p>
-            <p className={checkedIn ? "text-green-600" : "text-red-600"}>
-              <strong>Status:</strong> {checkedIn ? "Checked In" : "Not Checked In"}
+            <p><strong>Name:</strong> {userData.guest.name}</p>
+            <p><strong>Email:</strong> {userData.guest.email}</p>
+            <p><strong>Phone:</strong> {userData.guest.whatsapp}</p>
+            <p><strong>Additional Members:</strong> {userData.guest.additionalMembers}</p>
+            <p className={userData.guest.checkedIn ? "text-green-600" : "text-red-600"}>
+              <strong>Status:</strong> {userData.guest.checkedIn ? "Checked In" : "Not Checked In"}
             </p>
-            {!checkedIn && (
-              <form action={`/api/checkin`} method="POST">
-                <input type="hidden" name="regId" value={regId} />
-                <Button className="w-full" type="submit">Check In</Button>
-              </form>
+            {!userData.guest.checkedIn && (
+              <Button className="w-full" onClick={handleCheckIn}>
+                Check In
+              </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        ) : (
+          <p className="text-red-500">{userData?.message || "User not found"}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+const CheckInPage = () => {
+  return (
+    <div className="p-6 flex justify-center items-center h-[90dvh]">
+      <Suspense fallback={<p>Loading...</p>}>
+        <CheckInContent />
+      </Suspense>
     </div>
   );
 };
