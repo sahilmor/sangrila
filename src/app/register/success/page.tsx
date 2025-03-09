@@ -1,13 +1,13 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react"; // Added Suspense import
+import React, { useEffect, useState, Suspense } from "react"; 
 import QRCode from "qrcode";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 import Loading from "@/components/layout/Loading";
+import { toast } from "sonner";
 
-// Wrapping the actual page content into a separate component
 const SuccessPageContent = () => {
   const router = useRouter();
   const [qrCode, setQrCode] = useState<string | null>(null);
@@ -20,8 +20,8 @@ const SuccessPageContent = () => {
         const qrData = `https://event.com/checkin?regId=${registrationId}`;
         const qrImage = await QRCode.toDataURL(qrData);
         setQrCode(qrImage);
-      } catch (error) {
-        console.error("QR Code generation failed:", error);
+      } catch {
+        toast.error("Failed! Please try again.");
       }
     };
 
@@ -75,7 +75,6 @@ const SuccessPageContent = () => {
   );
 };
 
-// Wrapping the main page component with Suspense
 const SuccessPage = () => (
   <Suspense fallback={<div><Loading /></div>}>
     <SuccessPageContent />

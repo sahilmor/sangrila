@@ -29,8 +29,8 @@ export async function POST(req: Request) {
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASS, // Use App Password if using Gmail
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS, 
       },
     });
 
@@ -51,14 +51,14 @@ export async function POST(req: Request) {
           filename: "qrcode.png",
           content: qrCodeBuffer,
           encoding: "base64",
-          cid: "qrcode", // This `cid` will be used in the email HTML
+          cid: "qrcode", 
         },
       ],
     });
 
     await transporter.sendMail({
       from: `"Shangrila 2k25" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL, // Admin email
+      to: process.env.ADMIN_EMAIL, 
       subject: "New Guest Registered",
       html: `
         <h3>A New Guest has Registered</h3>

@@ -21,9 +21,6 @@ const ContactSection = () => {
     setLoading(true);
     setMessage('');
 
-    console.log(message);
-    
-
     const formData = {
       name: (e.currentTarget.elements.namedItem('name') as HTMLInputElement).value,
       email: (e.currentTarget.elements.namedItem('email') as HTMLInputElement).value,
@@ -44,9 +41,11 @@ const ContactSection = () => {
 
       setMessage('Message sent successfully!');
       formRef.current?.reset();
-      e.currentTarget.reset(); // Reset form after success
+      e.currentTarget.reset();
     } catch {
       setMessage('Failed to send message. Please try again.');
+      console.log(message);
+      
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 interface UserDetails {
     registrationId: string;
@@ -42,19 +43,15 @@ const AdminDashboard = () => {
             const response = await fetch("/api/admin/registerations");
             const data = await response.json();
 
-            console.log("User Details:", data);
-            
-
             setUserDetails(data);
 
-            // Calculate statistics
             const totalRegistrations = data.length;
             const totalGuests = data.filter((user: UserDetails) => user.registerationType.toLowerCase() === "guest").length;
             const totalSchools = data.filter((user: UserDetails) => user.registerationType.toLowerCase() === "school").length;
 
             setStats({ totalRegistrations, totalGuests, totalSchools });
-        } catch (error) {
-            console.error("Error fetching data:", error);
+        } catch {
+            toast.error("Failed! Please try again.");
         }
         setIsLoading(false);
     };

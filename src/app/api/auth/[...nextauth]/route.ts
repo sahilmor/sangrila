@@ -14,7 +14,6 @@ const handler = NextAuth({
           throw new Error("Missing email or password");
         }
 
-        // Simulate a database check (Replace with actual DB lookup)
         if (credentials.email === "admin@example.com" && credentials.password === "admin123") {
           return { id: "1", name: "Admin", email: credentials.email, role: "admin" };
         }
@@ -26,13 +25,13 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role; // ✅ Assign role to session user
+        session.user.role = token.role;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role; // ✅ Store role in JWT token
+        token.role = user.role; 
       }
       return token;
     },
@@ -43,5 +42,4 @@ const handler = NextAuth({
   },
 });
 
-// ✅ Correctly Export NextAuth Handlers
 export { handler as GET, handler as POST };

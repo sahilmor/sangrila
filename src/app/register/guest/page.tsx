@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-// Reference options
 const referenceOptions = [
   "Pro Chancellor",
   "Vice Chancellor",
@@ -46,7 +45,6 @@ export default function GuestRegisteration() {
       });
   
       const result = await response.json();
-      console.log("API Response:", result);
       if (!response.ok) throw new Error("Failed to register");
   
       if (result.success && result.registrationId) {
@@ -66,9 +64,8 @@ export default function GuestRegisteration() {
       } else {
         throw new Error("Registration failed");
       }
-    } catch (error) {
+    } catch {
       toast.error("Registration Failed! Please try again.");
-      console.error("Error:", error);
       router.push("/register/failed");
     } finally {
       setLoading(false);

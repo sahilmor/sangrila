@@ -41,7 +41,7 @@ export const RegisterSection = () => {
     setLoading(id);
     setTimeout(() => {
       router.push(link);
-    }, 1500); // Simulated delay before navigation
+    }, 1500); 
   };
 
   return (
@@ -102,7 +102,7 @@ export const RegisterSection = () => {
                     className="w-full"
                     size="lg"
                     onClick={() => handleNavigate(option.link, option.id)}
-                    disabled={loading !== null} // Disable all buttons while loading
+                    disabled={loading !== null} 
                   >
                     {loading === option.id ? "Proceeding..." : "Register Now"}
                   </Button>
