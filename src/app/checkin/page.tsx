@@ -11,7 +11,7 @@ const fetchUserData = async (regId: string) => {
     if (!response.ok) return null;
     
     return await response.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 };
