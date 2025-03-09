@@ -11,6 +11,7 @@ const SchoolSchema = new mongoose.Schema(
     registrationId: {type: String},
     registerationType: {type: String},
     qrCode: {type: String},
+    checkedIn: {type: Boolean, default: false},
     createdAt: { type: Date, default: Date.now },
   },
   { collection: "schoolDetails", timestamps: true },

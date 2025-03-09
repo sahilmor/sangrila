@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const registrationId = uuidv4();
     const registerationType = "guest";
 
-    const qrCodeURL = await QRCode.toDataURL(`https://event.com/checkin?regId=${registrationId}`);
+    const qrCodeURL = await QRCode.toDataURL(`https://sangrila2k25.vercel.app/checkin?regId=${registrationId}`);
 
     const qrCodeBuffer = Buffer.from(qrCodeURL.split(",")[1], "base64");
 

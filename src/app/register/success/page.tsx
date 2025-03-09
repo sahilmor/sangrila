@@ -17,7 +17,7 @@ const SuccessPageContent = () => {
   useEffect(() => {
     const generateQRCode = async () => {
       try {
-        const qrData = `https://event.com/checkin?regId=${registrationId}`;
+        const qrData = `https://sangrila2k25.vercel.app/checkin?regId=${registrationId}`;
         const qrImage = await QRCode.toDataURL(qrData);
         setQrCode(qrImage);
       } catch {
