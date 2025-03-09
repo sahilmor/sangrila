@@ -12,7 +12,8 @@ const CheckInContent = () => {
   const [userData, setUserData] = useState<{
     success: boolean;
     message: string;
-    guest?: {
+    type?: "guest" | "school";
+    data?: {
       name: string;
       email: string;
       whatsapp: string;
@@ -54,7 +55,7 @@ const CheckInContent = () => {
         setUserData((prev) => prev && {
           ...prev,
           guest: {
-            ...prev.guest!,
+            ...prev.data!,
             checkedIn: true,
           },
         });
@@ -75,16 +76,16 @@ const CheckInContent = () => {
       <CardContent>
         {loading ? (
           <p>Checking registration...</p>
-        ) : userData?.success && userData.guest ? (
+        ) : userData?.success && userData.data ? (
           <div className="space-y-3">
-            <p><strong>Name:</strong> {userData.guest.name}</p>
-            <p><strong>Email:</strong> {userData.guest.email}</p>
-            <p><strong>Phone:</strong> {userData.guest.whatsapp}</p>
-            <p><strong>Additional Members:</strong> {userData.guest.additionalMembers}</p>
-            <p className={userData.guest.checkedIn ? "text-green-600" : "text-red-600"}>
-              <strong>Status:</strong> {userData.guest.checkedIn ? "Checked In" : "Not Checked In"}
+            <p><strong>Name:</strong> {userData.data.name}</p>
+            <p><strong>Email:</strong> {userData.data.email}</p>
+            <p><strong>Phone:</strong> {userData.data.whatsapp}</p>
+            <p><strong>Additional Members:</strong> {userData.data.additionalMembers}</p>
+            <p className={userData.data.checkedIn ? "text-green-600" : "text-red-600"}>
+              <strong>Status:</strong> {userData.data.checkedIn ? "Checked In" : "Not Checked In"}
             </p>
-            {!userData.guest.checkedIn && (
+            {!userData.data.checkedIn && (
               <Button className="w-full" onClick={handleCheckIn}>
                 Check In
               </Button>
