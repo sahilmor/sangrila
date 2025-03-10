@@ -32,7 +32,7 @@ export const Header = () => {
         <Link href="/" className="flex items-center gap-2">
         <div className="relative w-16 h-auto">
             <Image
-              src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQchhVYz5g4xPzyLXYUh5-h7GHYMmCCKBzw&s'
+              src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDPAnCbkbi91J10pmaIaoQeBvw87cfEJ34-A&s'
               alt="Sangrila 2k25"
               className="object-contain rounded-full"
               width={80}
@@ -41,7 +41,7 @@ export const Header = () => {
             />
             </div>
           <span className="text-xl font-bold">
-            Shangrila 2k25
+            Sangrila 2k25
           </span>
         </Link>
 {/* 

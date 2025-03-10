@@ -59,7 +59,7 @@ const AboutSection = () => {
           >
             <p className="text-lg text-gray-700">
               Sangrila 2K25 is our institution&apos;s premier cultural event, bringing 
-              together alumni, guests, and school representatives for a celebration of 
+              together alumni, guests, and principal / school coordinators for a celebration of 
               talent, creativity, and connection.
             </p>
             <p className="text-lg text-gray-700">

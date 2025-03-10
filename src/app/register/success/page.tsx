@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react"; 
+import React, { useEffect, useState, Suspense } from "react";
 import QRCode from "qrcode";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,10 @@ const SuccessPageContent = () => {
           Registration Successful!
         </h2>
         <p className="text-gray-600 mt-2">
-          Thank you for registering for <strong>Sangrila 2k25</strong> as an Alumni. Your registration ID is {registrationId}
+          Thank you for registering for <strong>Sangrila 2k25</strong>.
+        </p>
+        <p className="text-gray-600 mt-2">
+          Your registration ID is <strong>{registrationId}</strong>
         </p>
 
         {/* QR Code Section */}

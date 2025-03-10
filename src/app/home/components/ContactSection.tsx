@@ -126,23 +126,23 @@ const ContactSection = () => {
                       <Phone className="w-5 h-5 text-blue-500 mr-3" />
                       <div>
                         <h4 className="font-medium">Phone</h4>
-                        <p className="text-gray-600 mt-1">+91 98765 43210</p>
-                        <p className="text-gray-600">+91 87654 32109</p>
+                        <p className="text-gray-600 mt-1">+91 98968 03571</p>
+                        {/* <p className="text-gray-600">+91 87654 32109</p> */}
                       </div>
                     </div>
                     <div className="flex items-start">
                       <Mail className="w-5 h-5 text-blue-500 mr-3" />
                       <div>
                         <h4 className="font-medium">Email</h4>
-                        <p className="text-gray-600 mt-1">info@sangrila2k25.com</p>
-                        <p className="text-gray-600">support@sangrila2k25.com</p>
+                        <p className="text-gray-600 mt-1">ghub@geeta.edu.in</p>
+                        {/* <p className="text-gray-600">support@sangrila2k25.com</p> */}
                       </div>
                     </div>
                     <div className="flex items-start">
                       <MapPin className="w-5 h-5 text-blue-500 mr-3" />
                       <div>
                         <h4 className="font-medium">Address</h4>
-                        <p className="text-gray-600 mt-1">70 Milestone, NH-1, Samalkha, Panipat, Haryana 132102</p>
+                        <p className="text-gray-600 mt-1">GEETA UNIVERSITY, NAULTHA, PANIPAT</p>
                       </div>
                     </div>
                   </div>

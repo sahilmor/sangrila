@@ -76,8 +76,8 @@ export default function SchoolRegisteration() {
     <div className="flex justify-center items-center h-[120dvh] bg-gray-100 p-6 md:mt-0 mt-8">
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Shangrila 2k25</CardTitle>
-          <CardDescription>Join us for the Shangrila 2k25. We are excited to have you with us.</CardDescription>
+          <CardTitle className="text-center text-2xl">Sangrila 2k25</CardTitle>
+          <CardDescription>Join us for the Sangrila 2k25. We are excited to have you with us.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>

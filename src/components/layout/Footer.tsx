@@ -63,16 +63,16 @@ const Footer = () => {
               <li className="flex items-start space-x-3">
                 <MapPin size={20} className="text-blue-500 shrink-0 mt-1" />
                 <span>
-                  70 Milestone, NH-1, Samalkha, Panipat, Haryana 132102
+                GEETA UNIVERSITY, NAULTHA, PANIPAT
                 </span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone size={20} className="text-blue-500" />
-                <span>+91 98765 43210</span>
+                <span>+91 98968 03571</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail size={20} className="text-blue-500" />
-                <span>info@sangrila2k25.com</span>
+                <span>ghub@geeta.edu.in</span>
               </li>
             </ul>
           </div>

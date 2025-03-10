@@ -35,12 +35,12 @@ export async function POST(req: Request) {
     });
 
     await transporter.sendMail({
-      from: `"Shangrila 2k25" <${process.env.EMAIL_USER}>`,
+      from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
       to: data.email,
-      subject: "Shangrila 2k25 Registration Confirmation",
+      subject: "Sangrila 2k25 Registration Confirmation",
       html: `
         <h2>Welcome, ${data.name}!</h2>
-        <p>Your registration for Shangrila 2k25 is successful.</p>
+        <p>Your registration for Sangrila 2k25 is successful.</p>
         <p>Your Registration ID: <strong>${registrationId}</strong></p>
         <p>Scan the QR code below at the event check-in:</p>
         <img src="cid:qrcode" alt="QR Code" width="200" height="200"/>
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     });
 
     await transporter.sendMail({
-      from: `"Shangrila 2k25" <${process.env.EMAIL_USER}>`,
+      from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL, 
       subject: "New Guest Registered",
       html: `
