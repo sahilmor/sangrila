@@ -51,7 +51,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link href="/register/school" className="hover:underline hover:text-blue-500">
-                  School Coordinator Registration
+                  Principal / School Coordinator Registration
                 </Link>
               </li>
             </ul>
