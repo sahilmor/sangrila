@@ -20,6 +20,7 @@ interface UserDetails {
     whatsapp: string;
     address: string;
     registerationType: string;
+    additionalMembers: number;
     createdAt: string;
 }
 
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
     };
 
     const exportUserDetailsToExcel = () => {
-        let csvContent = "Registration ID,Name,Email,Phone,Registration Type,Date\n";
+        let csvContent = "Registration ID,Name,Email,Phone,Registration Type,Additional Members,Date\n";
 
         userDetails.forEach(user => {
             const row = [
@@ -78,6 +79,7 @@ const AdminDashboard = () => {
                 user.email,
                 user.whatsapp || '',
                 user.registerationType,
+                user.additionalMembers,
                 formatDate(user.createdAt)
             ].join(",");
 
@@ -205,6 +207,7 @@ const AdminDashboard = () => {
                                                             <p><strong>Email:</strong> {selectedUser.email}</p>
                                                             <p><strong>Phone:</strong> {selectedUser.whatsapp || "-"}</p>
                                                             <p><strong>Registration Type:</strong> {selectedUser.registerationType}</p>
+                                                            <p><strong>Additional Members:</strong> {selectedUser.additionalMembers}</p>
                                                             <p><strong>Registration Date:</strong> {formatDate(selectedUser.createdAt)}</p>
                                                         </div>
                                                     )}
