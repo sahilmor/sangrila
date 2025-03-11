@@ -122,7 +122,7 @@ export default function SchoolRegisteration() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSubmit} className="w-full" disabled={loading}>
+          <Button onClick={handleSubmit} className="w-full cursor-pointer" disabled={loading}>
             {loading ? "Registering..." : "Register"}
           </Button>
         </CardFooter>

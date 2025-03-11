@@ -19,7 +19,7 @@ const AlumniRegistration = () => {
         <CardFooter>
           <Button asChild className="w-full">
             <a
-              href="https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfewyIHA_f4Q-8v1Y9FJtCmH9SXLA7jEclPPsTTLZDkqdCeUQ/viewform"
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -101,7 +101,7 @@ const ContactSection = () => {
                     <label htmlFor="message" className="text-sm font-medium">Message</label>
                     <Textarea id="message" placeholder="Type your message here..." className="min-h-[120px] mt-2" required/>
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
                   {loading ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : "Send Message"}
                     </Button>
                 </form>

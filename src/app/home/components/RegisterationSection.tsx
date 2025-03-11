@@ -99,7 +99,7 @@ export const RegisterSection = () => {
                 
                 <CardFooter>
                   <Button
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     size="lg"
                     onClick={() => handleNavigate(option.link, option.id)}
                     disabled={loading !== null} 

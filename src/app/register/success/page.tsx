@@ -68,10 +68,10 @@ const SuccessPageContent = () => {
         </p>
 
         <div className="flex justify-center gap-4 mt-6 flex-wrap">
-          <Button variant="outline" onClick={() => router.push("/")}>
+          <Button variant="outline" onClick={() => router.push("/")} className="cursor-pointer">
             ← Return to Home
           </Button>
-          <Button onClick={downloadQRCode}>Download QR Code</Button>
+          <Button onClick={downloadQRCode} className="cursor-pointer">Download QR Code</Button>
         </div>
       </div>
     </div>
