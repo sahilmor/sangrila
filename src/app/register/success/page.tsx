@@ -30,20 +30,10 @@ const SuccessPageContent = () => {
     }
   }, [registrationId]);
 
-  const downloadQRCode = () => {
-    if (!qrCode) return;
-
-    const link = document.createElement("a");
-    link.href = qrCode;
-    link.download = `QR_${registrationId}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-xl p-8 text-center md:max-w-lg w-full mt-18 md:mt-0 ">
+      <div className="bg-white shadow-lg rounded-xl p-8 text-center md:max-w-lg w-full mt-18 md:mt-0">
         <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
         <h2 className="text-2xl font-semibold mt-4 text-gray-800">
           Registration Successful!
@@ -55,6 +45,15 @@ const SuccessPageContent = () => {
           Your registration ID is <strong>{registrationId}</strong>
         </p>
 
+        {/* New Section: Payment Verification Notice */}
+        <div className="bg-blue-100 border border-blue-300 text-blue-800 p-4 rounded-lg mt-6">
+          <p>We have received your registration details.</p>
+          <p>
+            After verifying your payment, your check-in ticket will be
+            delivered to your email.
+          </p>
+        </div>
+
         {/* QR Code Section */}
         {qrCode && (
           <div className="mt-6">
@@ -63,15 +62,10 @@ const SuccessPageContent = () => {
           </div>
         )}
 
-        <p className="text-gray-500 text-sm mt-3">
-          Save your QR Code for event entry.
-        </p>
-
         <div className="flex justify-center gap-4 mt-6 flex-wrap">
           <Button variant="outline" onClick={() => router.push("/")} className="cursor-pointer">
             ← Return to Home
           </Button>
-          <Button onClick={downloadQRCode} className="cursor-pointer">Download QR Code</Button>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ const SchoolSchema = new mongoose.Schema(
     registerationType: {type: String},
     qrCode: {type: String},
     checkedIn: {type: Boolean, default: false},
+    paymentVerified: {type: Boolean, default: false},
     createdAt: { type: Date, default: Date.now },
   },
   { collection: "schoolDetails", timestamps: true },

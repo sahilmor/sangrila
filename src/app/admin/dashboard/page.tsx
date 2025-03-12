@@ -8,10 +8,12 @@ import {
     Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, LogOut, Menu, Ticket } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface UserDetails {
     registrationId: string;
@@ -21,6 +23,7 @@ interface UserDetails {
     address: string;
     registerationType: string;
     additionalMembers: number;
+    paymentVerified: boolean;
     createdAt: string;
 }
 
@@ -99,15 +102,35 @@ const AdminDashboard = () => {
     return (
         <div className="py-20 px-6 md:px-12 max-w-7xl mx-auto mt-6">
             <div className="mb-12 flex items-center justify-between">
-            <div>
-                <h1 className="text-3xl font-heading font-bold">Admin Dashboard</h1>
-                <p className="mt-2 text-gray-600">Manage registration details</p>
-            </div>
-            <div>
-                <Button onClick={() => signOut()}>
-                    Logout
-                </Button>
-            </div>
+                <div>
+                    <h1 className="text-3xl font-heading font-bold">Admin Dashboard</h1>
+                    <p className="mt-2 text-gray-600">Manage registration details</p>
+                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <Menu size={24} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <Link href="/admin/dashboard">
+                            <DropdownMenuItem>
+                                <Menu size={16} className="mr-2" />
+                                Dashboard
+                            </DropdownMenuItem>
+                        </Link>
+                        <Link href="/admin/coupons">
+                            <DropdownMenuItem>
+                                <Ticket size={16} className="mr-2" />
+                                Manage Coupons
+                            </DropdownMenuItem>
+                        </Link>
+                        <DropdownMenuItem onClick={() => signOut()} className="text-red-500">
+                            <LogOut size={16} className="mr-2" />
+                            Logout
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* Stats Section */}
@@ -169,7 +192,7 @@ const AdminDashboard = () => {
                                     <TableHead>Phone</TableHead>
                                     <TableHead>Registration Type</TableHead>
                                     <TableHead>Details</TableHead>
-                                    <TableHead>Registration Date</TableHead>
+                                    <TableHead>Payment Verified</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -186,9 +209,9 @@ const AdminDashboard = () => {
                                         <TableCell>
                                             <Dialog>
                                                 <DialogTrigger asChild>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="sm" 
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
                                                         className="flex items-center gap-1"
                                                         onClick={() => setSelectedUser(user)}
                                                     >
@@ -214,7 +237,11 @@ const AdminDashboard = () => {
                                                 </DialogContent>
                                             </Dialog>
                                         </TableCell>
-                                        <TableCell>{formatDate(user.createdAt)}</TableCell>
+                                        <TableCell>{user.paymentVerified ? (
+                                            <Badge variant="default" className="text-green-600 bg-green-100">Verified</Badge>
+                                        ) : (
+                                            <Badge variant="destructive" className="text-red-600 bg-red-100">Pending</Badge>
+                                        )}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

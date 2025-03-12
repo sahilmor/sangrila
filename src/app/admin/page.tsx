@@ -1,11 +1,11 @@
 "use client";
 
 import AccessDenied from "@/components/layout/AccessDenied";
-import AdminDashboard from "@/components/layout/AdminDashboard";
 import Loading from "@/components/layout/Loading";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import AdminDashboard from "./dashboard/page";
 
 const AdminPage = () => {
   const { data: session, status } = useSession();
