@@ -7,27 +7,24 @@ const GuestSchema = new mongoose.Schema(
     address: { type: String, required: true },
     whatsapp: { type: String, required: true },
     additionalMembers: { type: Number, default: 0 },
-    reference: { type: String },
     registrationId: { type: String, unique: true, required: true },
-    registerationType: { 
+    registrationType: { 
       type: String, 
       enum: ["guest", "school"], 
       required: true 
     },
     qrCode: { type: String }, 
     checkedIn: { type: Boolean, default: false },
+    qrSent: { type: Boolean, default: false },
 
-    // Payment Details
     totalAmount: { type: Number, required: true },
     appliedCoupon: { type: String, default: "" },
-    utrNumber: { type: String, unique: true, sparse: true }, // Optional, unique
+    utrNumber: { type: String, unique: true, sparse: true },
     paymentStatus: { 
       type: String, 
       enum: ["pending", "verified", "failed"], 
       default: "pending" 
     },
-
-    paymentVerified: { type: Boolean, default: false },
   },
   { collection: "guestDetails", timestamps: true }
 );

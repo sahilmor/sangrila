@@ -11,16 +11,14 @@ export async function POST(req: Request) {
 
     const data = await req.json();
     const registrationId = uuidv4();
-    const registerationType = "school";
+    const registrationType = "school";
 
     const qrCodeURL = await QRCode.toDataURL(`https://event.com/checkin?regId=${registrationId}`);
-
-    const qrCodeBuffer = Buffer.from(qrCodeURL.split(",")[1], "base64");
 
     const newSchool = new SchoolDetails({
       ...data,
       registrationId,
-      registerationType,
+      registrationType,
       qrCode: qrCodeURL,
     });
 
@@ -42,20 +40,12 @@ export async function POST(req: Request) {
         <h2>Welcome, ${data.name}!</h2>
         <p>Your registration for Sangrila 2k25 is successful.</p>
         <p>Your Registration ID: <strong>${registrationId}</strong></p>
-        <p>Scan the QR code below at the event check-in:</p>
-        <img src="cid:qrcode" alt="QR Code" width="200" height="200"/>
+        <p>After verifying your payment, your check-in ticket will be sent to your email.</p>
         <p>We look forward to seeing you at the event!</p>
       `,
-      attachments: [
-        {
-          filename: "qrcode.png",
-          content: qrCodeBuffer,
-          encoding: "base64",
-          cid: "qrcode", 
-        },
-      ],
     });
 
+    // Notify admin about new registration
     await transporter.sendMail({
       from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
@@ -65,18 +55,17 @@ export async function POST(req: Request) {
         <p><strong>Name:</strong> ${data.name}</p>
         <p><strong>Email:</strong> ${data.email}</p>
         <p><strong>WhatsApp:</strong> ${data.whatsapp}</p>
-        <p><strong>Reference:</strong> ${data.reference}</p>
-        <p><strong>Registeration Type:</strong> ${data.registerationType}</p>
+        <p><strong>Registration Type:</strong> ${registrationType}</p>
       `,
     });
 
     return NextResponse.json({
       success: true,
       registrationId,
-      message: "Principal/School registered successfully!",
+      message: "Principal/School Coordinator registered successfully!",
     });
   } catch (error) {
-    console.error("Error saving principal/School:", error);
-    return NextResponse.json({ success: false, message: "Failed to register principal/School." }, { status: 500 });
+    console.error("Error saving principal/School Coordinator :", error);
+    return NextResponse.json({ success: false, message: "Failed to register principal/School Coordinator." }, { status: 500 });
   }
 }

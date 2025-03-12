@@ -8,7 +8,7 @@ import {
     Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, LogOut, Menu, Ticket } from "lucide-react";
+import { Download, FileText, LogOut, Menu, Send, Ticket } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
@@ -21,9 +21,11 @@ interface UserDetails {
     email: string;
     whatsapp: string;
     address: string;
-    registerationType: string;
+    registrationType: string;
     additionalMembers: number;
-    paymentVerified: boolean;
+    paymentStatus: string;
+    qrCode: string;
+    qrSent: boolean;
     createdAt: string;
 }
 
@@ -31,6 +33,7 @@ const AdminDashboard = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [userDetails, setUserDetails] = useState<UserDetails[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
+    const [sendingQr, setSendingQr] = useState<{ [key: string]: boolean }>({});
     const [stats, setStats] = useState({
         totalRegistrations: 0,
         totalGuests: 0,
@@ -50,8 +53,8 @@ const AdminDashboard = () => {
             setUserDetails(data);
 
             const totalRegistrations = data.length;
-            const totalGuests = data.filter((user: UserDetails) => user.registerationType.toLowerCase() === "guest").length;
-            const totalSchools = data.filter((user: UserDetails) => user.registerationType.toLowerCase() === "school").length;
+            const totalGuests = data.filter((user: UserDetails) => user.registrationType.toLowerCase() === "guest").length;
+            const totalSchools = data.filter((user: UserDetails) => user.registrationType.toLowerCase() === "school").length;
 
             setStats({ totalRegistrations, totalGuests, totalSchools });
         } catch {
@@ -81,8 +84,9 @@ const AdminDashboard = () => {
                 user.name,
                 user.email,
                 user.whatsapp || '',
-                user.registerationType,
+                user.registrationType,
                 user.additionalMembers,
+                user.paymentStatus,
                 formatDate(user.createdAt)
             ].join(",");
 
@@ -97,6 +101,41 @@ const AdminDashboard = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const sendQRCode = async (user: UserDetails) => {
+        setSendingQr((prev) => ({ ...prev, [user.registrationId]: true }));
+        try {
+            const response = await fetch("/api/sendQr", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: user.email, qrCodeImage: user.qrCode }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success("QR code sent successfully!");
+
+                await fetch("/api/updateQrStatus", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ registrationId: user.registrationId }),
+                });
+
+                setUserDetails((prev) =>
+                    prev.map((u) =>
+                        u.registrationId === user.registrationId ? { ...u, qrSent: true } : u
+                    )
+                );
+            } else {
+                toast.error(data.message || "Failed to send QR code");
+            }
+        } catch (error) {
+            console.error("QR Code Sending Error:", error);
+            toast.error("Error sending QR code");
+        } finally {
+            setSendingQr((prev) => ({ ...prev, [user.registrationId]: false }));
+        }
     };
 
     return (
@@ -170,7 +209,7 @@ const AdminDashboard = () => {
             <div className="bg-white rounded-xl p-8 shadow-subtle">
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex justify-end w-full">
-                        <Button onClick={exportUserDetailsToExcel} className="flex gap-2 items-center">
+                        <Button onClick={exportUserDetailsToExcel} className="flex gap-2 items-center cursor-pointer">
                             <Download size={16} />
                             Export to CSV
                         </Button>
@@ -190,9 +229,9 @@ const AdminDashboard = () => {
                                     <TableHead>Name</TableHead>
                                     <TableHead>Email</TableHead>
                                     <TableHead>Phone</TableHead>
-                                    <TableHead>Registration Type</TableHead>
                                     <TableHead>Details</TableHead>
                                     <TableHead>Payment Verified</TableHead>
+                                    <TableHead>Send QR Ticket</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -201,11 +240,6 @@ const AdminDashboard = () => {
                                         <TableCell>{user.name}</TableCell>
                                         <TableCell>{user.email}</TableCell>
                                         <TableCell>{user.whatsapp || "-"}</TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline" className="capitalize">
-                                                {user.registerationType}
-                                            </Badge>
-                                        </TableCell>
                                         <TableCell>
                                             <Dialog>
                                                 <DialogTrigger asChild>
@@ -229,19 +263,35 @@ const AdminDashboard = () => {
                                                             <p><strong>Name:</strong> {selectedUser.name}</p>
                                                             <p><strong>Email:</strong> {selectedUser.email}</p>
                                                             <p><strong>Phone:</strong> {selectedUser.whatsapp || "-"}</p>
-                                                            <p><strong>Registration Type:</strong> {selectedUser.registerationType}</p>
+                                                            <p><strong>Registration Type:</strong> {selectedUser.registrationType}</p>
                                                             <p><strong>Additional Members:</strong> {selectedUser.additionalMembers}</p>
-                                                            <p><strong>Registration Date:</strong> {formatDate(selectedUser.createdAt)}</p>
                                                         </div>
                                                     )}
                                                 </DialogContent>
                                             </Dialog>
                                         </TableCell>
-                                        <TableCell>{user.paymentVerified ? (
-                                            <Badge variant="default" className="text-green-600 bg-green-100">Verified</Badge>
-                                        ) : (
-                                            <Badge variant="destructive" className="text-red-600 bg-red-100">Pending</Badge>
-                                        )}</TableCell>
+                                        <TableCell>
+                                            {user.paymentStatus === "verified" ? (
+                                                <Badge variant="default" className="text-green-600 bg-green-100">
+                                                    Verified
+                                                </Badge>
+                                            ) : user.paymentStatus === "failed" ? (
+                                                <Badge variant="destructive" className="text-red-600 bg-red-100">
+                                                    Failed
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="text-yellow-600 bg-yellow-100">
+                                                    Pending
+                                                </Badge>
+                                            )}
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <Button size="sm" className="flex items-center gap-1 cursor-pointer" onClick={() => sendQRCode(user)} disabled={sendingQr[user.registrationId] || user.qrSent}>
+                                                <Send size={14} />
+                                                {user.qrSent ? "Sent" : sendingQr[user.registrationId] ? "Sending..." : "Send QR"}
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

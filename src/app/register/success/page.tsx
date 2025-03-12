@@ -1,35 +1,15 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react";
-import QRCode from "qrcode";
+import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-import Image from "next/image";
 import Loading from "@/components/layout/Loading";
-import { toast } from "sonner";
+import { Suspense } from "react";
 
 const SuccessPageContent = () => {
   const router = useRouter();
-  const [qrCode, setQrCode] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const registrationId = searchParams.get("registrationId");
-
-  useEffect(() => {
-    const generateQRCode = async () => {
-      try {
-        const qrData = `https://sangrila2k25.vercel.app/checkin?regId=${registrationId}`;
-        const qrImage = await QRCode.toDataURL(qrData);
-        setQrCode(qrImage);
-      } catch {
-        toast.error("Failed! Please try again.");
-      }
-    };
-
-    if (registrationId) {
-      generateQRCode();
-    }
-  }, [registrationId]);
-
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
@@ -45,7 +25,7 @@ const SuccessPageContent = () => {
           Your registration ID is <strong>{registrationId}</strong>
         </p>
 
-        {/* New Section: Payment Verification Notice */}
+        {/* Payment Verification Notice */}
         <div className="bg-blue-100 border border-blue-300 text-blue-800 p-4 rounded-lg mt-6">
           <p>We have received your registration details.</p>
           <p>
@@ -53,14 +33,6 @@ const SuccessPageContent = () => {
             delivered to your email.
           </p>
         </div>
-
-        {/* QR Code Section */}
-        {qrCode && (
-          <div className="mt-6">
-            <p className="text-gray-600">Scan this QR code to check in:</p>
-            <Image src={qrCode} alt="QR Code" className="w-40 h-40 mx-auto mt-2" width={160} height={160} />
-          </div>
-        )}
 
         <div className="flex justify-center gap-4 mt-6 flex-wrap">
           <Button variant="outline" onClick={() => router.push("/")} className="cursor-pointer">

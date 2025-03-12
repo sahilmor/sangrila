@@ -22,7 +22,7 @@ export default function GuestRegistration() {
     totalAmount: "1000",
     appliedCoupon: "",
     utrNo: "",
-    registerationType: "guest",
+    registrationType: "guest",
   });
 
   const handleChange = (field: string, value: string) => {
@@ -40,8 +40,6 @@ export default function GuestRegistration() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log("formData:", formData);
-
     try {
       const response = await fetch("/api/guest", {
         method: "POST",
@@ -50,8 +48,6 @@ export default function GuestRegistration() {
       });
 
       const result = await response.json();
-      console.log("result:", result);
-
       if (!response.ok) throw new Error("Failed to register");
 
       if (result.success && result.registrationId) {
@@ -66,16 +62,14 @@ export default function GuestRegistration() {
           totalAmount: "1000",
           appliedCoupon: "",
           utrNo: "",
-          registerationType: "guest",
+          registrationType: "guest",
         });
 
-        router.push("/register/success");
+        router.push(`/register/success?registrationId=${result.registrationId}`);
       } else {
         throw new Error("Registration failed");
       }
-    } catch (error) {
-      console.log("error:", error);
-
+    } catch {
       toast.error("Registration Failed! Please try again.");
       router.push("/register/failed");
     } finally {
@@ -130,7 +124,7 @@ export default function GuestRegistration() {
 
           <div className="flex flex-col items-center">
             <Label>Scan to Pay</Label>
-            <Image src="/qr-code.png" alt="QR Code" className="mt-2 w-40 h-40" />
+            <Image src="/qr-code.png" alt="QR Code" className="mt-2 w-40 h-40" width={100} height={100} />
           </div>
 
           {/* UTR No. Field */}
