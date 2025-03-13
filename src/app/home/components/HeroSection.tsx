@@ -71,17 +71,6 @@ export default function HeroSection() {
           spectacular performances, unforgettable reunions, and moments that will 
           last a lifetime.
         </motion.p>
-        
-        {/* <motion.div
-          className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          <Button asChild className="bg-sangrila-500 hover:bg-sangrila-600 text-white px-8 py-6" size="lg">
-            <Link href="#register">Register Now</Link>
-          </Button>
-        </motion.div> */}
       </div>
 
       {/* Scroll Down Indicator */}

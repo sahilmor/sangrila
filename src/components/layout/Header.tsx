@@ -44,10 +44,6 @@ export const Header = () => {
             Sangrila 2k25
           </span>
         </Link>
-{/* 
-        <Button asChild className="ml-2 hidden md:block">
-            <Link href="/#register">Register Now</Link>
-          </Button> */}
       </div>
     </div>
   );

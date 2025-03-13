@@ -25,22 +25,28 @@ const Coupons = () => {
   const [newCoupon, setNewCoupon] = useState({ name: "", assignedTo: "", quantity: 1, discount: 0 });
   const [editCoupon, setEditCoupon] = useState<Coupon | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   useEffect(() => {
     fetchCoupons();
   }, []);
 
   const fetchCoupons = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/coupons");
       const data = await response.json();
       setCoupons(data);
     } catch {
       toast.error("Failed to fetch coupons.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAddCoupon = async () => {
+    setLoading(true);
     if (!newCoupon.name || !newCoupon.assignedTo || newCoupon.quantity <= 0 || newCoupon.discount <= 0) {
       toast.error("Please enter valid coupon details");
       return;
@@ -62,6 +68,8 @@ const Coupons = () => {
       }
     } catch {
       toast.error("Error adding coupon");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,6 +80,7 @@ const Coupons = () => {
 
   const handleUpdateCoupon = async () => {
     if (!editCoupon) return;
+    setEditLoading(true);
 
     try {
       const response = await fetch(`/api/coupons/${editCoupon._id}`, {
@@ -95,6 +104,8 @@ const Coupons = () => {
       }
     } catch {
       toast.error("Error updating coupon");
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -154,7 +165,7 @@ const Coupons = () => {
             <Input type="number" value={newCoupon.discount} onChange={(e) => setNewCoupon({ ...newCoupon, discount: Number(e.target.value) })} />
           </div>
           <div className="flex items-end">
-            <Button onClick={handleAddCoupon} className="w-full cursor-pointer">Add Coupon</Button>
+          <Button onClick={handleAddCoupon} className="w-full cursor-pointer" disabled={loading}>{loading ? 'Adding...' : 'Add Coupon'}</Button>
           </div>
         </CardContent>
       </Card>
@@ -213,7 +224,7 @@ const Coupons = () => {
                 <Label className="mb-2">Discount %</Label>
                 <Input type="number" value={editCoupon.discount} onChange={(e) => setEditCoupon({ ...editCoupon, discount: Number(e.target.value) })} />
               </div>
-              <Button onClick={handleUpdateCoupon} className="w-full cursor-pointer">Update Coupon</Button>
+              <Button onClick={handleUpdateCoupon} className="w-full cursor-pointer" disabled={editLoading}>{editLoading ? 'Updating...' : 'Update Coupon'}</Button>
             </div>
           )}
         </DialogContent>

@@ -12,6 +12,7 @@ import Image from "next/image";
 export default function GuestRegistration() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [apply, setapply] = useState(false);
   const [couponStatus, setCouponStatus] = useState(""); // For success/error messages
   const [discountPercentage, setDiscountPercentage] = useState(0); // Store discount percentage
   const [discountAmount, setDiscountAmount] = useState(0); // Store calculated discount
@@ -52,6 +53,7 @@ export default function GuestRegistration() {
       setCouponStatus("Please enter a coupon code.");
       return;
     }
+    setapply(true);
   
     try {
       // Fetch coupon details
@@ -82,17 +84,37 @@ export default function GuestRegistration() {
     } catch (error) {
       console.error("Coupon validation error:", error);
       setCouponStatus("Error validating coupon. Try again.");
+    } finally {
+      setapply(false);
     }
   };
   
   
   const handleSubmit = async () => {
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(formData.email)) {
+    toast.error("Please enter a valid email address.");
+    return;
+  }
+
+  const phonePattern = /^[0-9]{10}$/;
+  if (!phonePattern.test(formData.whatsapp)) {
+    toast.error("Please enter a valid 10-digit phone number.");
+    return;
+  }
+
+  if (!formData.utrNumber) {
+    toast.error("UTR Number is required for payment verification.");
+    return;
+  }
+
     setLoading(true);
     try {
       const response = await fetch("/api/guest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, totalAmount }), // Send the calculated total amount
+        body: JSON.stringify({ ...formData, totalAmount }),
       });
   
       const result = await response.json();
@@ -176,8 +198,8 @@ export default function GuestRegistration() {
                 placeholder="Enter coupon code"
                 className="flex-1"
               />
-              <Button type="button" onClick={validateCoupon} className="w-auto">
-                Apply
+              <Button type="button" onClick={validateCoupon} className="w-auto cursor-pointer">
+                {apply ? "Applying..." : "Apply"}
               </Button>
             </div>
             {couponStatus && (

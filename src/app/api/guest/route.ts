@@ -32,7 +32,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // Send email to user
     await transporter.sendMail({
       from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
       to: data.email,
@@ -43,10 +42,11 @@ export async function POST(req: Request) {
         <p>Your Registration ID: <strong>${registrationId}</strong></p>
         <p>After verifying your payment, your check-in ticket will be sent to your email.</p>
         <p>We look forward to seeing you at the event!</p>
+        <p>Regards,</p>
+        <p>Geeta University</p>
       `,
     });
 
-    // Notify admin about new registration
     await transporter.sendMail({
       from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,

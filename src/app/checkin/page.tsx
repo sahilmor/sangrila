@@ -9,6 +9,7 @@ const CheckInContent = () => {
   const searchParams = useSearchParams();
   const regId = searchParams.get("regId");
   const [loading, setLoading] = useState(true);
+  const [checkingIn, setCheckingIn] = useState(false)
   const [userData, setUserData] = useState<{
     success: boolean;
     message: string;
@@ -42,6 +43,7 @@ const CheckInContent = () => {
 
   const handleCheckIn = async () => {
     if (!regId) return;
+    setCheckingIn(true);
     try {
       const response = await fetch(`/api/checkin`, {
         method: "POST",
@@ -64,6 +66,8 @@ const CheckInContent = () => {
       }
     } catch (error) {
       console.error("Check-in error:", error);
+    } finally {
+      setCheckingIn(false);
     }
   };
 
@@ -86,9 +90,7 @@ const CheckInContent = () => {
               <strong>Status:</strong> {userData.data.checkedIn ? "Checked In" : "Not Checked In"}
             </p>
             {!userData.data.checkedIn && (
-              <Button className="w-full" onClick={handleCheckIn}>
-                Check In
-              </Button>
+              <Button onClick={handleCheckIn} className="w-full cursor-pointer" disabled={checkingIn}>{checkingIn ? 'Checking In...' : 'Check In'}</Button>
             )}
           </div>
         ) : (

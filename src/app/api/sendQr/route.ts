@@ -27,9 +27,16 @@ export async function POST(req: Request) {
             to: email,
             subject: "Your Sangrila 2k25 Check-in QR Code",
             html: `
-                <h2>Hello!</h2>
-                <p>Here is your check-in QR code for Sangrila 2k25.</p>
-                <p>Please find the attached QR code image.</p>
+                <h2>Dear User,</h2>
+                <p>Please find attached your check-in QR code for Sangrila 2K25. Kindly present this QR code to the officials at the entry gate of Geeta University.</p>
+                <p><strong>Event Details:</strong></p>
+                <p><strong>Date:</strong> 22nd March 2025</p>
+                <p><strong>Venue:</strong> Geeta University</p>
+                <p><strong>Time:</strong> 06:00 PM</p>
+                <p>Looking forward to welcoming you!</p>
+                <p><strong>Best regards,</strong></p>
+                <p><strong>Geeta University</strong></p>
+
             `,
             attachments: [
                 {
