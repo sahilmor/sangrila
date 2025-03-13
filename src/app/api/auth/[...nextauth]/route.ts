@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
-      name: "Admin Login",
+      name: "Admin & Accountant Login",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -14,8 +14,17 @@ const handler = NextAuth({
           throw new Error("Missing email or password");
         }
 
-        if (credentials.email === "admin@example.com" && credentials.password === "admin123") {
-          return { id: "1", name: "Admin", email: credentials.email, role: "admin" };
+        // Define allowed users
+        const users = [
+          { id: "1", name: "Admin", email: "admin@geeta.com", password: "admin@123", role: "admin" },
+          { id: "2", name: "Accountant", email: "accounts@geeta.com", password: "accounts@123", role: "accountant" },
+        ];
+
+        // Find user by email and password
+        const user = users.find((u) => u.email === credentials.email && u.password === credentials.password);
+
+        if (user) {
+          return user;
         }
 
         throw new Error("Invalid credentials");
@@ -25,13 +34,13 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role;
+        session.user.role = token.role; // Assign role to session
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role; 
+        token.role = user.role; // Store role in JWT token
       }
       return token;
     },

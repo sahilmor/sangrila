@@ -19,7 +19,7 @@ const GuestSchema = new mongoose.Schema(
 
     totalAmount: { type: Number, required: true },
     appliedCoupon: { type: String, default: "" },
-    utrNumber: { type: String, unique: true, sparse: true },
+    utrNumber: { type: String, unique: true, sparse: true, required: true },
     paymentStatus: { 
       type: String, 
       enum: ["pending", "verified", "failed"], 

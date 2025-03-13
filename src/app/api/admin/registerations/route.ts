@@ -1,20 +1,41 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
 import GuestDetails from "@/models/Guest";
 import SchoolDetails from "@/models/School";
+import Coupon from "@/models/Coupon";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export async function GET() {
-  try {
-    await connectToDatabase();
+    try {
+        await connectToDatabase();
 
-    const guestRegistrations = await GuestDetails.find().lean();
-    const schoolRegistrations = await SchoolDetails.find().lean();
+        // Fetch all users from Guest and School collections
+        const guests = await GuestDetails.find();
+        const schools = await SchoolDetails.find();
 
-    const allRegistrations = [...guestRegistrations, ...schoolRegistrations];
+        // Combine both collections
+        const users = [...guests, ...schools];
 
-    return NextResponse.json(allRegistrations, { status: 200 });
-  } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json({ success: false, message: "Failed to fetch registrations." }, { status: 500 });
-  }
+        // Fetch coupon details for users who have applied a coupon
+        const couponCodes = users.map(user => user.appliedCoupon).filter(code => code);
+
+        const coupons = await Coupon.find({ name: { $in: couponCodes } });
+
+        // Map users with coupon details
+        const userData = users.map(user => {
+            const userCoupon = coupons.find(coupon => coupon.name === user.appliedCoupon);
+            return {
+                ...user._doc,
+                couponDetails: userCoupon ? {
+                    name: userCoupon.name,
+                    assignedTo: userCoupon.assignedTo,
+                    discount: userCoupon.discount
+                } : null
+            };
+        });
+
+        return NextResponse.json(userData);
+    } catch (error) {
+        console.error("Error fetching user details:", error);
+        return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
+    }
 }

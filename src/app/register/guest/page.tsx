@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
@@ -12,6 +12,11 @@ import Image from "next/image";
 export default function GuestRegistration() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [couponStatus, setCouponStatus] = useState(""); // For success/error messages
+  const [discountPercentage, setDiscountPercentage] = useState(0); // Store discount percentage
+  const [discountAmount, setDiscountAmount] = useState(0); // Store calculated discount
+  const [totalAmount, setTotalAmount] = useState(1000);
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -21,38 +26,81 @@ export default function GuestRegistration() {
     additionalMembers: "0",
     totalAmount: "1000",
     appliedCoupon: "",
-    utrNo: "",
+    utrNumber: "",
     registrationType: "guest",
   });
 
+  useEffect(() => {
+    const additionalMembers = Number(formData.additionalMembers) || 0;
+    const baseAmount = (additionalMembers + 1) * 1000; // ₹1000 per person
+
+    // Calculate discount amount
+    const discountValue = (baseAmount * discountPercentage) / 100;
+    setDiscountAmount(discountValue);
+
+    // Update totalAmount with discount applied
+    setTotalAmount(Math.max(0, baseAmount - discountValue)); // Ensure no negative values
+  }, [formData.additionalMembers, discountPercentage]);
+
+
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => {
-      const updatedData = { ...prev, [field]: value };
-
-      if (field === "additionalMembers") {
-        const additionalMembers = Number(value) || 0;
-        updatedData.totalAmount = String((additionalMembers + 1) * 1000);
-      }
-
-      return updatedData;
-    });
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const validateCoupon = async () => {
+    if (!formData.appliedCoupon) {
+      setCouponStatus("Please enter a coupon code.");
+      return;
+    }
+  
+    try {
+      // Fetch coupon details
+      const response = await fetch(`/api/coupons/code/${formData.appliedCoupon}`);
+      const result = await response.json();
+  
+      if (!response.ok || !result || result.quantity <= 0) {
+        setCouponStatus("Invalid, expired, or out-of-stock coupon.");
+        setDiscountPercentage(0);
+        return;
+      }
+  
+      // Apply coupon and update quantity in database
+      const updateResponse = await fetch(`/api/coupons/code/${formData.appliedCoupon}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      const updateResult = await updateResponse.json();
+  
+      if (!updateResponse.ok || !updateResult.success) {
+        setCouponStatus(updateResult.error || "Failed to apply coupon.");
+        return;
+      }
+  
+      setDiscountPercentage(result.discount);
+      setCouponStatus(`Coupon applied! ${result.discount}% off`);
+    } catch (error) {
+      console.error("Coupon validation error:", error);
+      setCouponStatus("Error validating coupon. Try again.");
+    }
+  };
+  
+  
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/guest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, totalAmount }), // Send the calculated total amount
       });
-
+  
       const result = await response.json();
       if (!response.ok) throw new Error("Failed to register");
-
+  
       if (result.success && result.registrationId) {
         toast.success("Registration Successful!");
-
+  
         setFormData({
           name: "",
           email: "",
@@ -61,10 +109,10 @@ export default function GuestRegistration() {
           additionalMembers: "0",
           totalAmount: "1000",
           appliedCoupon: "",
-          utrNo: "",
+          utrNumber: "",
           registrationType: "guest",
         });
-
+  
         router.push(`/register/success?registrationId=${result.registrationId}`);
       } else {
         throw new Error("Registration failed");
@@ -76,6 +124,7 @@ export default function GuestRegistration() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center bg-gray-100 p-6">
@@ -113,24 +162,41 @@ export default function GuestRegistration() {
           {/* Total Payment Field */}
           <div>
             <Label>Total Payment</Label>
-            <Input type="number" value={formData.totalAmount} readOnly className="mt-2 bg-gray-100 cursor-not-allowed" />
+            <Input type="number" value={totalAmount} readOnly className="mt-2 bg-gray-100 cursor-not-allowed" />
+            {discountAmount > 0 && <p className="text-green-600 text-sm mt-1">Discount Applied: ₹{discountAmount}</p>}
           </div>
 
           {/* Coupon Code Field */}
           <div>
             <Label>Coupon Code</Label>
-            <Input value={formData.appliedCoupon} onChange={(e) => handleChange("appliedCoupon", e.target.value)} placeholder="Enter coupon code (if any)" className="mt-2" />
+            <div className="flex space-x-2 mt-2">
+              <Input
+                value={formData.appliedCoupon}
+                onChange={(e) => handleChange("appliedCoupon", e.target.value)}
+                placeholder="Enter coupon code"
+                className="flex-1"
+              />
+              <Button type="button" onClick={validateCoupon} className="w-auto">
+                Apply
+              </Button>
+            </div>
+            {couponStatus && (
+              <p className={`mt-2 text-sm ${discountAmount ? "text-green-600" : "text-red-600"}`}>
+                {couponStatus}
+              </p>
+            )}
           </div>
+
 
           <div className="flex flex-col items-center">
             <Label>Scan to Pay</Label>
-            <Image src="/qr-code.png" alt="QR Code" className="mt-2 w-40 h-40" width={100} height={100} />
+            <Image src="/paymentQr.jpg" alt="QR Code" className="mt-2" width={300} height={300} />
           </div>
 
           {/* UTR No. Field */}
-          <div>
+          <div className="mt-2">
             <Label>UTR No.</Label>
-            <Input value={formData.utrNo} onChange={(e) => handleChange("utrNo", e.target.value)} placeholder="Enter UTR number (Transaction ID)" className="mt-2" />
+            <Input value={formData.utrNumber} onChange={(e) => handleChange("utrNumber", e.target.value)} placeholder="Enter UTR number (Transaction ID)" className="mt-2" />
           </div>
         </CardContent>
         <CardFooter>

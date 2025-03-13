@@ -26,8 +26,16 @@ interface UserDetails {
     paymentStatus: string;
     qrCode: string;
     qrSent: boolean;
+    totalAmount: number;
     createdAt: string;
+    appliedCoupon?: string;
+    couponDetails?: {
+        name: string;
+        assignedTo: string;
+        discount: number;
+    } | null;
 }
+
 
 const AdminDashboard = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -164,7 +172,7 @@ const AdminDashboard = () => {
                                 Manage Coupons
                             </DropdownMenuItem>
                         </Link>
-                        <DropdownMenuItem onClick={() => signOut()} className="text-red-500">
+                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })} className="text-red-500">
                             <LogOut size={16} className="mr-2" />
                             Logout
                         </DropdownMenuItem>
@@ -265,10 +273,24 @@ const AdminDashboard = () => {
                                                             <p><strong>Phone:</strong> {selectedUser.whatsapp || "-"}</p>
                                                             <p><strong>Registration Type:</strong> {selectedUser.registrationType}</p>
                                                             <p><strong>Additional Members:</strong> {selectedUser.additionalMembers}</p>
+                                                            <p><strong>Payment Status:</strong> {selectedUser.paymentStatus}</p>
+                                                            <p><strong>Total Payment:</strong> {selectedUser.totalAmount}</p>
+
+                                                            {selectedUser.couponDetails ? (
+                                                                <div className="border-t pt-4 mt-4 space-y-4">
+                                                                    <h3 className="text-lg font-semibold">Coupon Details</h3>
+                                                                    <p><strong>Coupon Code:</strong> {selectedUser.couponDetails.name}</p>
+                                                                    <p><strong>Assigned To:</strong> {selectedUser.couponDetails.assignedTo}</p>
+                                                                    <p><strong>Discount:</strong> {selectedUser.couponDetails.discount}%</p>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-gray-500">No coupon applied.</p>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </DialogContent>
                                             </Dialog>
+
                                         </TableCell>
                                         <TableCell>
                                             {user.paymentStatus === "verified" ? (
