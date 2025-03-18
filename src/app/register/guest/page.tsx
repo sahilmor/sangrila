@@ -17,6 +17,7 @@ export default function GuestRegistration() {
   const [discountPercentage, setDiscountPercentage] = useState(0); // Store discount percentage
   const [discountAmount, setDiscountAmount] = useState(0); // Store calculated discount
   const [totalAmount, setTotalAmount] = useState(1000);
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(1000);
 
 
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ export default function GuestRegistration() {
     whatsapp: "",
     additionalMembers: "0",
     totalAmount: "1000",
+    totalAfterDiscount: "1000",
     appliedCoupon: "",
     utrNumber: "",
     registrationType: "guest",
@@ -33,14 +35,13 @@ export default function GuestRegistration() {
 
   useEffect(() => {
     const additionalMembers = Number(formData.additionalMembers) || 0;
-    const baseAmount = (additionalMembers + 1) * 1000; // ₹1000 per person
+    const baseAmount = (additionalMembers + 1) * 1000;
 
-    // Calculate discount amount
     const discountValue = (baseAmount * discountPercentage) / 100;
     setDiscountAmount(discountValue);
 
-    // Update totalAmount with discount applied
-    setTotalAmount(Math.max(0, baseAmount - discountValue)); // Ensure no negative values
+    setTotalAmount(baseAmount);
+    setTotalAfterDiscount(Math.max(0, baseAmount - discountValue));
   }, [formData.additionalMembers, discountPercentage]);
 
 
@@ -114,7 +115,7 @@ export default function GuestRegistration() {
       const response = await fetch("/api/guest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, totalAmount }),
+        body: JSON.stringify({ ...formData, totalAmount, totalAfterDiscount: totalAmount - discountAmount, }),
       });
   
       const result = await response.json();
@@ -130,6 +131,7 @@ export default function GuestRegistration() {
           whatsapp: "",
           additionalMembers: "0",
           totalAmount: "1000",
+          totalAfterDiscount: "1000",
           appliedCoupon: "",
           utrNumber: "",
           registrationType: "guest",

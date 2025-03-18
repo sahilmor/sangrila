@@ -25,6 +25,8 @@ interface UserDetails {
     qrSent: boolean;
     createdAt: string;
     utrNumber: string;
+    totalAmount: number;
+    totalAfterDiscount: number;
 }
 
 const AcountsDashboard = () => {
@@ -153,8 +155,9 @@ const AcountsDashboard = () => {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Name</TableHead>
-                                    <TableHead>Phone</TableHead>
                                     <TableHead>UTR</TableHead>
+                                    <TableHead>Total Amount</TableHead>
+                                    <TableHead>Amount to be paid</TableHead>
                                     <TableHead>Payment Verified</TableHead>
                                     <TableHead>Confirm Payment</TableHead>
                                 </TableRow>
@@ -163,8 +166,9 @@ const AcountsDashboard = () => {
                                 {userDetails.map((user) => (
                                     <TableRow key={user.registrationId || user.email || Math.random()}>
                                         <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.whatsapp || "-"}</TableCell>
                                         <TableCell>{user.utrNumber || "N/A"}</TableCell>
+                                        <TableCell>{user.totalAmount || "0"}</TableCell>
+                                        <TableCell>{user.totalAfterDiscount || "0"}</TableCell>
                                         <TableCell>
                                             {user.paymentStatus.toLowerCase() === "verified" ? (
                                                 <Badge variant="default" className="text-green-600 bg-green-100">
@@ -184,7 +188,7 @@ const AcountsDashboard = () => {
                                         <TableCell className="flex gap-2 items-center">
                                         <Button
                                             size="sm"
-                                            className="flex items-center gap-1 cursor-pointer w-[45%] bg-green-500 text-black hover:bg-green-400"
+                                            className="flex items-center gap-1 cursor-pointer w-[45%] bg-green-600 text-black hover:bg-green-700"
                                             onClick={() => updatePaymentStatus(user.registrationId, "verified")}
                                             disabled={user.paymentStatus.toLowerCase() === "verified" || user.paymentStatus.toLowerCase() === "failed" || loadingStatus[user.registrationId]}
                                         >

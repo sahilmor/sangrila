@@ -18,6 +18,7 @@ const SchoolSchema = new mongoose.Schema(
     qrSent: { type: Boolean, default: false },
 
     totalAmount: { type: Number, required: true },
+    totalAfterDiscount: { type: Number, required: true },
     appliedCoupon: { type: String, default: "" },
     utrNumber: { type: String, unique: true, sparse: true, required: true },
     paymentStatus: { 

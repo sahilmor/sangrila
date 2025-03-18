@@ -20,6 +20,8 @@ export async function POST(req: Request) {
       registrationId,
       registrationType,
       qrCode: qrCodeURL,
+      totalAmount: data.totalAmount,
+      totalAfterDiscount: data.totalAfterDiscount,
     });
 
     await newGuest.save();

@@ -17,6 +17,7 @@ export default function SchoolRegisteration() {
   const [discountAmount, setDiscountAmount] = useState(0); // Store calculated discount
   const [totalAmount, setTotalAmount] = useState(1000);
   const [apply, setapply] = useState(false);
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(1000);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -25,6 +26,7 @@ export default function SchoolRegisteration() {
     whatsapp: "",
     additionalMembers: "0",
     totalAmount: "1000",
+    totalAfterDiscount: "1000",
     appliedCoupon: "",
     utrNumber: "",
     registrationType: "school",
@@ -32,16 +34,14 @@ export default function SchoolRegisteration() {
 
   useEffect(() => {
     const additionalMembers = Number(formData.additionalMembers) || 0;
-    const baseAmount = (additionalMembers + 1) * 1000; // ₹1000 per person
+    const baseAmount = (additionalMembers + 1) * 1000;
 
-    // Calculate discount amount
     const discountValue = (baseAmount * discountPercentage) / 100;
     setDiscountAmount(discountValue);
 
-    // Update totalAmount with discount applied
-    setTotalAmount(Math.max(0, baseAmount - discountValue)); // Ensure no negative values
+    setTotalAmount(baseAmount);
+    setTotalAfterDiscount(Math.max(0, baseAmount - discountValue));
   }, [formData.additionalMembers, discountPercentage]);
-
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -113,7 +113,7 @@ export default function SchoolRegisteration() {
       const response = await fetch("/api/guest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, totalAmount }), // Send the calculated total amount
+        body: JSON.stringify({ ...formData, totalAmount, totalAfterDiscount: totalAmount - discountAmount, }),
       });
   
       const result = await response.json();
@@ -129,6 +129,7 @@ export default function SchoolRegisteration() {
           whatsapp: "",
           additionalMembers: "0",
           totalAmount: "1000",
+          totalAfterDiscount: "1000",
           appliedCoupon: "",
           utrNumber: "",
           registrationType: "guest",
