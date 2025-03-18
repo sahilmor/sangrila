@@ -34,7 +34,7 @@ const AboutSection = () => {
           >
             <div className="rounded-2xl overflow-hidden shadow-lg relative group">
               <Image
-                src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"
+                src="/sangrila.jpg"
                 alt="Sangrila Event"
                 layout="responsive"
                 width={1074}
@@ -57,16 +57,25 @@ const AboutSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="space-y-6"
           >
-            <p className="text-lg text-gray-700">
-              Sangrila 2K25 is our institution&apos;s premier cultural event, bringing 
-              together alumni, guests, and principal / school coordinators for a celebration of 
-              talent, creativity, and connection.
+            <p className="text-xl font-bold text-gray-700">
+            🎉 Sangrila 2K25 – The Ultimate Fest Experience! 🎉
             </p>
+            <p className="text-lg text-gray-700">Get ready for the most electrifying event of the year! Sangrila 2K25 is back, bigger and better than ever. Brace yourself for an unforgettable night as we bring you the sensational Astha Gill, the voice behind chart-topping hits like DJ Wale Babu, Buzz, and Proper Patola!</p>
+            <ul>
+              <li>🔥 Live Performance by Astha Gill</li>
+              <li>🎶 Unstoppable Music & Vibes</li>
+              <li>🎭 Exciting Cultural & Fun Activities</li>
+              <li>🎊 A Night to Remember!</li>
+            </ul>
             <p className="text-lg text-gray-700">
-              This two-day extravaganza features stunning performances, interactive 
-              sessions, and networking opportunities that will create memories to 
-              last a lifetime.
+            Mark your calendars and get set to groove to the beats of Sangrila 2K25! Stay tuned for more updates and book your passes soon.
             </p>
+            <ul>
+              <li>📍 Venue: Geeta University</li>
+              <li>📅 Date: 21st - 22nd March</li>
+            </ul>
+            <p className="text-gray-700 text-lg">Lets make memories that last a lifetime!</p>
+            <p className="text-gray-700 text-lg">🚀✨ #Sangrila2K25 #AsthaGillLive #FestVibes</p>
 
             {/* Event Details */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
