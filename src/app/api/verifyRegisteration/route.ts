@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import GuestDetails from "@/models/Guest";
-import SchoolDetails from "@/models/School";
 
 export async function GET(req: Request) {
   try {
@@ -15,9 +14,8 @@ export async function GET(req: Request) {
     }
 
     const guest = await GuestDetails.findOne({ registrationId: regId });
-    const school = await SchoolDetails.findOne({ registrationId: regId });
 
-    if (!guest && !school) {
+    if (!guest) {
       return NextResponse.json({ success: false, message: "Invalid QR Code. Registration not found." }, { status: 404 });
     }
 
@@ -27,15 +25,6 @@ export async function GET(req: Request) {
         message: `Welcome, ${guest.name}!`,
         type: "guest",
         data: guest,
-      });
-    }
-
-    if (school) {
-      return NextResponse.json({
-        success: true,
-        message: `Welcome, ${school.name}!`,
-        type: "school",
-        data: school,
       });
     }
 

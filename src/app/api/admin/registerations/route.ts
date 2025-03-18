@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import GuestDetails from "@/models/Guest";
-import SchoolDetails from "@/models/School";
 import Coupon from "@/models/Coupon";
 import { connectToDatabase } from "@/lib/mongodb";
 
@@ -8,12 +7,10 @@ export async function GET() {
     try {
         await connectToDatabase();
 
-        // Fetch all users from Guest and School collections
         const guests = await GuestDetails.find();
-        const schools = await SchoolDetails.find();
 
         // Combine both collections
-        const users = [...guests, ...schools];
+        const users = [...guests ];
 
         // Fetch coupon details for users who have applied a coupon
         const couponCodes = users.map(user => user.appliedCoupon).filter(code => code);

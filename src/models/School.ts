@@ -10,7 +10,7 @@ const SchoolSchema = new mongoose.Schema(
     registrationId: { type: String, unique: true, required: true },
     registrationType: { 
       type: String, 
-      enum: ["guest", "school"], 
+      enum: ["guest"], 
       required: true 
     },
     qrCode: { type: String }, 

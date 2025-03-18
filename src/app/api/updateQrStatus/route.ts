@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import GuestDetails from "@/models/Guest";
-import SchoolDetails from "@/models/School";
 import { connectToDatabase } from "@/lib/mongodb";
 
 export async function POST(req: Request) {
@@ -13,10 +12,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, message: "Registration ID is required" }, { status: 400 });
         }
 
-        // Find the user in guest or school collections
         const user =
-            (await GuestDetails.findOne({ registrationId })) ||
-            (await SchoolDetails.findOne({ registrationId }));
+            (await GuestDetails.findOne({ registrationId }))
 
         if (!user) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });

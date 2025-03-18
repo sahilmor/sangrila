@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const CheckInContent = () => {
   const searchParams = useSearchParams();
@@ -13,7 +14,7 @@ const CheckInContent = () => {
   const [userData, setUserData] = useState<{
     success: boolean;
     message: string;
-    type?: "guest" | "school";
+    type?: "guest";
     data?: {
       name: string;
       email: string;
@@ -61,10 +62,16 @@ const CheckInContent = () => {
             checkedIn: true,
           },
         });
+
+        toast.success("Check-in successful!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
-        console.error("Check-in failed", result.message);
+        toast.error(result.message || "Check-in failed");
       }
     } catch (error) {
+      toast.error("Check-in error occurred");
       console.error("Check-in error:", error);
     } finally {
       setCheckingIn(false);
@@ -90,7 +97,13 @@ const CheckInContent = () => {
               <strong>Status:</strong> {userData.data.checkedIn ? "Checked In" : "Not Checked In"}
             </p>
             {!userData.data.checkedIn && (
-              <Button onClick={handleCheckIn} className="w-full cursor-pointer" disabled={checkingIn}>{checkingIn ? 'Checking In...' : 'Check In'}</Button>
+              <Button
+                onClick={handleCheckIn}
+                className="w-full cursor-pointer"
+                disabled={checkingIn}
+              >
+                {checkingIn ? "Checking In..." : "Check In"}
+              </Button>
             )}
           </div>
         ) : (

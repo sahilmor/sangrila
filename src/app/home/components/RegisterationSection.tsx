@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserCog, Users, School } from "lucide-react";
+import { UserCog, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -22,13 +22,6 @@ const registrationOptions = [
     description: "For friends, family, and guests who wish to join the celebration.",
     icon: Users,
     link: "/register/guest",
-  },
-  {
-    id: "school",
-    title: "Principal / School Registration",
-    description: "For principals and school coordinators representing their institutions.",
-    icon: School,
-    link: "/register/school",
   },
 ];
 
@@ -66,7 +59,7 @@ export const RegisterSection = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {registrationOptions.map((option, index) => (
             <motion.div
               key={option.id}

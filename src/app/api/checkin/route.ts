@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import GuestDetails from "@/models/Guest";
-import SchoolDetails from "@/models/School";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,20 +13,6 @@ export async function POST(req: NextRequest) {
       { checkedIn: true },
       { new: true }
     );
-
-    if (!guest) {
-      const school = await SchoolDetails.findOneAndUpdate(
-        { registrationId: regId },
-        { checkedIn: true },
-        { new: true }
-      );
-
-      if (!school) {
-        return NextResponse.json({ success: false, message: "Registration ID not found" }, { status: 404 });
-      }
-
-      return NextResponse.json({ success: true, message: "Check-in successful (School)", school });
-    }
 
     return NextResponse.json({ success: true, message: "Check-in successful (Guest)", guest });
   } catch (error) {

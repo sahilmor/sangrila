@@ -49,11 +49,6 @@ const Footer = () => {
                   Guest Registration
                 </Link>
               </li>
-              <li>
-                <Link href="/register/school" className="hover:underline hover:text-blue-500">
-                  Principal / School Coordinator Registration
-                </Link>
-              </li>
             </ul>
           </div>
 

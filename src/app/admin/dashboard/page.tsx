@@ -44,8 +44,6 @@ const AdminDashboard = () => {
     const [sendingQr, setSendingQr] = useState<{ [key: string]: boolean }>({});
     const [stats, setStats] = useState({
         totalRegistrations: 0,
-        totalGuests: 0,
-        totalSchools: 0
     });
 
     useEffect(() => {
@@ -62,9 +60,8 @@ const AdminDashboard = () => {
 
             const totalRegistrations = data.length;
             const totalGuests = data.filter((user: UserDetails) => user.registrationType.toLowerCase() === "guest").length;
-            const totalSchools = data.filter((user: UserDetails) => user.registrationType.toLowerCase() === "school").length;
 
-            setStats({ totalRegistrations, totalGuests, totalSchools });
+            setStats({ totalRegistrations });
         } catch {
             toast.error("Failed! Please try again.");
         }
@@ -189,26 +186,6 @@ const AdminDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <p className="text-3xl font-bold">{stats.totalRegistrations}</p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Total Guest Registrations</CardTitle>
-                        <CardDescription>All guest registrations</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{stats.totalGuests}</p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Total School Registrations</CardTitle>
-                        <CardDescription>All principal / school registrations</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{stats.totalSchools}</p>
                     </CardContent>
                 </Card>
             </div>
