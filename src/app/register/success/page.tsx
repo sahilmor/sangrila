@@ -19,7 +19,7 @@ const SuccessPageContent = () => {
           Registration Successful!
         </h2>
         <p className="text-gray-600 mt-2">
-          Thank you for registering for <strong>Sangrila 2k25</strong>.
+          Thank you for registering for <strong>Agaaz 2k25</strong>.
         </p>
         <p className="text-gray-600 mt-2">
           Your registration ID is <strong>{registrationId}</strong>

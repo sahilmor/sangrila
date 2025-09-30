@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowDownCircle } from 'lucide-react';
-import Image from 'next/image';
+import { useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { ArrowDownCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -11,87 +11,85 @@ export default function HeroSection() {
   useEffect(() => {
     const handleParallax = () => {
       if (!heroRef.current) return;
-      const scrollY = window.scrollY;
-      const parallaxElement = heroRef.current.querySelector('.parallax-bg') as HTMLElement;
-      
-      if (parallaxElement) {
-        parallaxElement.style.transform = `translateY(${scrollY * 0.4}px)`;
-      }
+      const y = window.scrollY * 0.35;
+      const el = heroRef.current.querySelector(".parallax-bg") as HTMLElement;
+      if (el) el.style.transform = `translateY(${y}px)`;
     };
-
-    window.addEventListener('scroll', handleParallax);
-    return () => window.removeEventListener('scroll', handleParallax);
+    window.addEventListener("scroll", handleParallax);
+    return () => window.removeEventListener("scroll", handleParallax);
   }, []);
 
-  const handleScrollDown = () => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
-    }
+  const scrollToAbout = () => {
+    document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div ref={heroRef} className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 parallax-bg">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/90 z-10"></div>
+    <section ref={heroRef} className="relative h-[100dvh] overflow-hidden">
+      {/* bg image */}
+      <div className="absolute inset-0 parallax-bg will-change-transform">
         <Image
-          src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y29uY2VydHN8ZW58MHwwfDB8fHww"
-          alt="Sangrila Event"
-          layout="fill"
-          className="absolute inset-0 object-cover"
+          src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=1920&q=75&auto=format&fit=crop"
+          alt="Agaaz Event"
+          fill
+          className="object-cover"
           priority
         />
+        {/* orange→blue overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/50 to-black/80" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,115,0,0.35),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(37,99,235,0.35),transparent_50%)]" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-20 text-center px-6 max-w-4xl">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
-          <span className="bg-white/10 text-white backdrop-blur-sm py-1 px-4 rounded-full text-sm font-medium">
-            March 21-22, 2025
-          </span>
-        </motion.div>
-        
-        <motion.h1
-          className="mt-6 text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-white leading-tight"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          SANGRILA <span className="text-sangrila-400">2K25</span>
-        </motion.h1>
-        
-        <motion.p
-          className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          Join us for the most anticipated cultural event of the year featuring 
-          spectacular performances, unforgettable reunions, and moments that will 
-          last a lifetime.
-        </motion.p>
+      {/* content */}
+      <div className="relative z-10 h-full flex items-center justify-center text-center px-6">
+        <div className="max-w-4xl">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 bg-white/10 text-white backdrop-blur-md py-1.5 px-5 rounded-full text-sm font-medium"
+          >
+            4th Oct, 2025 • Geeta University
+          </motion.span>
+
+          <motion.h1
+            className="mt-6 text-4xl md:text-6xl lg:text-7xl font-heading font-extrabold leading-tight"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+          >
+            Agaaz{" "}
+            <span className="bg-gradient-to-r from-orange-500 to-blue-500 text-transparent bg-clip-text">
+              2K25
+            </span>
+          </motion.h1>
+
+          <motion.p
+            className="mt-6 text-base md:text-xl text-white/85 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.25 }}
+          >
+            The most anticipated cultural night — electrifying performances, massive vibes,
+            and memories for a lifetime.
+          </motion.p>
+        </div>
       </div>
 
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20">
-        <motion.button
-          onClick={handleScrollDown}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 1, 
-            delay: 1.2,
-            repeat: Infinity,
-            repeatType: 'reverse',
-            repeatDelay: 0.5
-          }}
-          className="text-white flex flex-col items-center gap-2 opacity-70 hover:opacity-100 transition-opacity"
-        >
-          <span className="text-sm font-medium">Scroll Down</span>
+      {/* scroll indicator */}
+      <motion.button
+        onClick={scrollToAbout}
+        className="absolute z-10 bottom-8 left-1/2 -translate-x-1/2 text-white/85 hover:text-white transition"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.9, repeat: Infinity, repeatType: "reverse" }}
+        aria-label="Scroll Down"
+      >
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs tracking-wide">Scroll Down</span>
           <ArrowDownCircle size={24} />
-        </motion.button>
-      </div>
-    </div>
+        </div>
+      </motion.button>
+    </section>
   );
 }

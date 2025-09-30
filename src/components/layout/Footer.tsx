@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           <div>
-            <h3 className="text-2xl font-heading font-bold mb-6">Sangrila 2k25</h3>
+            <h3 className="text-2xl font-heading font-bold mb-6">Agaaz 2k25</h3>
             <p className=" mb-6 max-w-xs">
               Join us for the most exciting cultural event of the year. Connect with alumni,
               enjoy performances, and celebrate together.
@@ -39,11 +39,11 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-6">Registration</h4>
             <ul className="space-y-3">
-              <li>
+              {/* <li>
                 <Link href="/register/alumni" className="hover:underline hover:text-blue-500">
                   Alumni Registration
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/register/guest" className="hover:underline hover:text-blue-500">
                   Guest Registration
@@ -74,7 +74,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400 text-sm">
-          <p>© {currentYear} Sangrila 2k25. All rights reserved.</p>
+          <p>© {currentYear} Agaaz 2k25. All rights reserved.</p>
         </div>
       </div>
     </div>

@@ -3,19 +3,12 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserCog, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 
 const registrationOptions = [
-  {
-    id: "alumni",
-    title: "Alumni Registration",
-    description: "For all our proud alumni who want to reconnect and celebrate.",
-    icon: UserCog,
-    link: "/register/alumni",
-  },
   {
     id: "guest",
     title: "Guest Registration",
@@ -25,86 +18,79 @@ const registrationOptions = [
   },
 ];
 
-export const RegisterSection = () => {
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+export function RegisterSection() {
+  const [hovered, setHovered] = useState<string | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleNavigate = (link: string, id: string) => {
+  const go = (link: string, id: string) => {
     setLoading(id);
-    setTimeout(() => {
-      router.push(link);
-    }, 1500); 
+    setTimeout(() => router.push(link), 900);
   };
 
   return (
-    <section id="register" className="py-20 px-6 md:px-12">
+    <section id="register" className="py-20 px-6 md:px-12 bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+        {/* heading */}
+        <div className="text-center mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-blue-600 font-medium">Join Us</span>
-            <h2 className="mt-2 text-3xl md:text-4xl font-heading font-bold">
+            <span className="text-orange-600 font-semibold">Join Us</span>
+            <h2 className="mt-2 text-3xl md:text-4xl font-heading font-extrabold bg-gradient-to-r from-orange-500 to-blue-600 text-transparent bg-clip-text">
               Registration Options
             </h2>
-            <div className="w-20 h-1 bg-blue-500 mx-auto mt-4 rounded-full"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-blue-600 mx-auto mt-4 rounded-full" />
             <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-              Choose the registration type that best suits you. All registrations include 
-              access to the event, materials, and refreshments.
+              Choose the registration type that suits you. All registrations include entry and activities.
             </p>
           </motion.div>
         </div>
 
+        {/* cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {registrationOptions.map((option, index) => (
+          {registrationOptions.map((o, i) => (
             <motion.div
-              key={option.id}
-              initial={{ opacity: 0, y: 30 }}
+              key={o.id}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: i * 0.12 }}
             >
-              <Card
-                className={cn(
-                  "transition-all duration-300",
-                  hoveredCard === option.id 
-                    ? "shadow-xl translate-y-[-5px]" 
-                    : "shadow-md hover:shadow-lg"
-                )}
-                onMouseEnter={() => setHoveredCard(option.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <CardHeader>
-                  <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <option.icon className="h-7 w-7 text-blue-600" />
-                  </div>
-                  <CardTitle className="text-2xl font-heading font-bold mt-4">
-                    {option.title}
-                  </CardTitle>
-                  <CardDescription className="mt-2 text-gray-600">
-                    {option.description}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardFooter>
-                  <Button
-                    className="w-full cursor-pointer"
-                    size="lg"
-                    onClick={() => handleNavigate(option.link, option.id)}
-                    disabled={loading !== null} 
-                  >
-                    {loading === option.id ? "Proceeding..." : "Register Now"}
-                  </Button>
-                </CardFooter>
-              </Card>
+              <div className="p-[1.5px] rounded-2xl bg-gradient-to-r from-orange-500 to-blue-600">
+                <Card
+                  className={cn(
+                    "rounded-2xl bg-white hover:shadow-xl transition-all duration-300",
+                    hovered === o.id ? "scale-[1.01]" : "hover:-translate-y-1"
+                  )}
+                  onMouseEnter={() => setHovered(o.id)}
+                  onMouseLeave={() => setHovered(null)}
+                >
+                  <CardHeader>
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-orange-500 to-blue-600 flex items-center justify-center shadow-md">
+                      <o.icon className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-2xl font-heading font-bold mt-6">{o.title}</CardTitle>
+                    <CardDescription className="mt-2 text-gray-600">{o.description}</CardDescription>
+                  </CardHeader>
+                  <CardFooter>
+                    <Button
+                      onClick={() => go(o.link, o.id)}
+                      disabled={loading !== null}
+                      className="w-full py-3 text-lg font-semibold bg-orange-500 hover:bg-orange-600 text-white cursor-pointer"
+                    >
+                      {loading === o.id ? "Proceeding..." : "Register Now"}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
             </motion.div>
           ))}
         </div>
       </div>
     </section>
   );
-};
+}

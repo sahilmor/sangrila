@@ -13,7 +13,15 @@ export async function POST(req: Request) {
     const registrationId = uuidv4();
     const registrationType = "guest";
 
-    const qrCodeURL = await QRCode.toDataURL(`https://sangrila2k25.vercel.app/checkin?regId=${registrationId}`);
+     const baseAmount = 1000;
+
+       const discount = data.appliedCoupon && data.discountPercentage
+      ? (baseAmount * data.discountPercentage) / 100
+      : 0;
+
+    const totalAfterDiscount = baseAmount - discount;
+
+    const qrCodeURL = await QRCode.toDataURL(`https://Agaaz2k25.vercel.app/checkin?regId=${registrationId}`);
 
     const newGuest = new GuestDetails({
       ...data,
@@ -21,7 +29,9 @@ export async function POST(req: Request) {
       registrationType,
       qrCode: qrCodeURL,
       totalAmount: data.totalAmount,
-      totalAfterDiscount: data.totalAfterDiscount,
+      totalAfterDiscount,
+      referredBy: data.referredBy,         // 🆕
+  referenceContact: data.referenceContact, // 🆕
     });
 
     await newGuest.save();
@@ -35,12 +45,12 @@ export async function POST(req: Request) {
     });
 
     await transporter.sendMail({
-      from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
+      from: `"Agaaz 2k25" <${process.env.EMAIL_USER}>`,
       to: data.email,
-      subject: "Sangrila 2k25 Registration Confirmation",
+      subject: "Agaaz 2k25 Registration Confirmation",
       html: `
         <h2>Welcome, ${data.name}!</h2>
-        <p>Your registration for Sangrila 2k25 is successful.</p>
+        <p>Your registration for Agaaz 2k25 is successful.</p>
         <p>Your Registration ID: <strong>${registrationId}</strong></p>
         <p>After verifying your payment, your check-in ticket will be sent to your email.</p>
         <p>We look forward to seeing you at the event!</p>
@@ -50,7 +60,7 @@ export async function POST(req: Request) {
     });
 
     await transporter.sendMail({
-      from: `"Sangrila 2k25" <${process.env.EMAIL_USER}>`,
+      from: `"Agaaz 2k25" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
       subject: "New Guest Registered",
       html: `

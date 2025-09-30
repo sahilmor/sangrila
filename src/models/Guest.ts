@@ -18,7 +18,9 @@ const GuestSchema = new mongoose.Schema(
     qrSent: { type: Boolean, default: false },
 
     totalAmount: { type: Number, required: true },
-    totalAfterDiscount: { type: Number, required: true },
+    referredBy: {tyoe: String, required: false},
+    referenceContact: {type: Number, required: false},
+    totalAfterDiscount: { type: Number, required: false },
     appliedCoupon: { type: String, default: "" },
     utrNumber: { type: String, unique: true, sparse: true, required: true },
     paymentStatus: { 
