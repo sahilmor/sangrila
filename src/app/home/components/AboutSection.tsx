@@ -84,7 +84,7 @@ export default function AboutSection() {
             </p>
             <ul className="text-gray-700">
               <li>📍 Venue: Geeta University</li>
-              <li>📅 Date: 21st - 22nd March</li>
+              <li>📅 Date: 4th Oct 2025</li>
             </ul>
             <p className="text-gray-700">Let’s make memories that last a lifetime!</p>
             <p className="text-gray-700">🚀✨ #Agaaz2K25 #AkhilLive #FresherVibes</p>
