@@ -33,6 +33,22 @@ export async function POST(req: Request) {
                 <p><strong>Date:</strong> 4th Oct 2025</p>
                 <p><strong>Venue:</strong> Geeta University</p>
                 
+                <h2>Important Notice Regarding Your QR Code</h2>
+
+<p><strong>This QR code is strictly personal and confidential.</strong> Please do not share it with anyone under any circumstances.</p>
+
+<p><strong>Do not scan this QR code in advance.</strong> If it is scanned outside the authorized process, it will be marked invalid and entry will be denied.</p>
+
+<p>Your QR code is designed to be <strong>scanned only once</strong> and <strong>only at the event venue</strong> by the official check-in team.</p>
+
+<p><strong>Any attempt to duplicate, forward, or misuse this QR code will result in the cancellation of your entry pass.</strong></p>
+
+<p>Please carry a valid government-issued photo ID along with this QR code for verification at the entry gates.</p>
+
+<hr />
+
+<p><em>This is an automated message from the Agaaz 2k25 Registration Team. Please do not reply to this email.</em></p>
+
                 <p>Looking forward to welcoming you!</p>
                 <p><strong>Best regards,</strong></p>
                 <p><strong>Geeta University</strong></p>
