@@ -23,6 +23,7 @@ const CheckInContent = () => {
       checkedIn: boolean;
     };
   } | null>(null);
+  
 
   useEffect(() => {
     if (!regId) return;
