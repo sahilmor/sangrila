@@ -84,7 +84,7 @@ const AdminDashboard = () => {
     };
 
     const exportUserDetailsToExcel = () => {
-        let csvContent = "Registration ID,Name,Email,Phone,Registration Type,Additional Members,Date\n";
+        let csvContent = "Registration ID,Name,Email,Phone,Registration Type,utrNumber,referredBy,referenceContact,Date\n";
 
         userDetails.forEach(user => {
             const row = [
