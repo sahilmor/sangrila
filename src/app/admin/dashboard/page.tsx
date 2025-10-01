@@ -27,6 +27,9 @@ interface UserDetails {
     qrCode: string;
     qrSent: boolean;
     totalAmount: number;
+    utrNumber: string;
+    referredBy: {type: String},
+    referenceContact: {type: Number},
     createdAt: string;
     appliedCoupon?: string;
     couponDetails?: {
@@ -92,6 +95,9 @@ const AdminDashboard = () => {
                 user.registrationType,
                 user.additionalMembers,
                 user.paymentStatus,
+                user.utrNumber,
+                user.referredBy,
+                user.referenceContact,
                 formatDate(user.createdAt)
             ].join(",");
 
