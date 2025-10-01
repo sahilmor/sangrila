@@ -27,9 +27,9 @@ interface UserDetails {
     qrCode: string;
     qrSent: boolean;
     totalAmount: number;
-    utrNumber: string;
-    referredBy: {type: String},
-    referenceContact: {type: Number},
+    utrNumber?: string;
+    referredBy?: { type: String },
+    referenceContact?: { type: Number },
     createdAt: string;
     appliedCoupon?: string;
     couponDetails?: {
@@ -71,6 +71,11 @@ const AdminDashboard = () => {
         setIsLoading(false);
     };
 
+    const asText = (value: any) => {
+        if (!value) return "";
+        return `="${String(value)}"`;  // Excel इसे text रखेगा
+    };
+
     const formatDate = (dateString: string) => {
         if (!dateString) return "N/A";
         const date = new Date(dateString);
@@ -84,35 +89,48 @@ const AdminDashboard = () => {
     };
 
     const exportUserDetailsToExcel = () => {
-        let csvContent = "Registration ID,Name,Email,Phone,Registration Type,utrNumber,referredBy,referenceContact,Date\n";
+        const headers = [
+            "Registration ID",
+            "Name",
+            "Email",
+            "Phone",
+            "Registration Type",
+            "UTR Number",
+            "Referred By",
+            "Reference Contact",
+            "Payment Status",
+            "Created At"
+        ];
+
+        let csvContent = "\uFEFF" + headers.join(",") + "\r\n"; // BOM + headers
 
         userDetails.forEach(user => {
             const row = [
-                user.registrationId,
-                user.name,
-                user.email,
-                user.whatsapp || '',
-                user.registrationType,
-                user.additionalMembers,
-                user.paymentStatus,
-                user.utrNumber,
-                user.referredBy,
-                user.referenceContact,
-                formatDate(user.createdAt)
+                `"${user.registrationId}"`,
+                `"${user.name}"`,
+                `"${user.email}"`,
+                asText(user.whatsapp || ""),     // Phone as text
+                `"${user.registrationType}"`,
+                asText(user.utrNumber || ""),    // UTR as text
+                `"${user.referredBy || ""}"`,
+                asText(user.referenceContact || ""), // Reference contact as text
+                `"${user.paymentStatus}"`,
+                `"${new Date(user.createdAt).toLocaleString("en-IN")}"`,
             ].join(",");
 
-            csvContent += row + "\n";
+            csvContent += row + "\r\n";
         });
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", "user_details.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "user_details.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     };
+
 
     const sendQRCode = async (user: UserDetails) => {
         setSendingQr((prev) => ({ ...prev, [user.registrationId]: true }));
@@ -258,6 +276,9 @@ const AdminDashboard = () => {
                                                             <p><strong>Additional Members:</strong> {selectedUser.additionalMembers}</p>
                                                             <p><strong>Payment Status:</strong> {selectedUser.paymentStatus}</p>
                                                             <p><strong>Total Payment:</strong> {selectedUser.totalAmount}</p>
+                                                            <p><strong>UTR Number:</strong> {selectedUser.utrNumber}</p>
+                                                            
+
 
                                                             {selectedUser.couponDetails ? (
                                                                 <div className="border-t pt-4 mt-4 space-y-4">
