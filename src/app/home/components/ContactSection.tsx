@@ -61,7 +61,7 @@ export default function ContactSection() {
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-blue-600 mx-auto mt-4 rounded-full" />
             <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-              Have questions about Agaaz 2K25? Reach out using the form or contact us directly.
+              Have questions about Sangrila 2k26? Reach out using the form or contact us directly.
             </p>
           </motion.div>
         </div>
@@ -137,7 +137,7 @@ export default function ContactSection() {
                     </span>
                     <div>
                       <h4 className="font-medium">Phone</h4>
-                      <p className="text-gray-600 mt-1">+91 98968 03571</p>
+                      <p className="text-gray-600 mt-1">+91 ‪98177 03733‬</p>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -146,7 +146,7 @@ export default function ContactSection() {
                     </span>
                     <div>
                       <h4 className="font-medium">Email</h4>
-                      <p className="text-gray-600 mt-1">ghub@geeta.edu.in</p>
+                      <p className="text-gray-600 mt-1">rajat@geetauniversity.edu.in</p>
                     </div>
                   </div>
                   <div className="flex items-start">

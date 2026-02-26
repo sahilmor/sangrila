@@ -33,7 +33,7 @@ export const Header = () => {
         <div className="relative w-16 h-auto">
             <Image
               src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDPAnCbkbi91J10pmaIaoQeBvw87cfEJ34-A&s'
-              alt="Agaaz 2k25"
+              alt="Sangrila 2k26"
               className="object-contain rounded-full"
               width={80}
               height={80}
@@ -41,7 +41,7 @@ export const Header = () => {
             />
             </div>
           <span className="text-xl font-bold">
-            Agaaz 2k25
+            Sangrila 2k26
           </span>
         </Link>
       </div>

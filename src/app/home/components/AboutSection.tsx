@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Calendar, MapPin, Users } from "lucide-react";
 
 const info = [
-  { icon: Calendar, label: "4th Oct, 2025" },
+  { icon: Calendar, label: "13th - 14th March, 2026" },
   { icon: MapPin, label: "Main Ground" },
   { icon: Users, label: "7000+ Attendees" },
 ];
@@ -24,7 +24,7 @@ export default function AboutSection() {
           >
             <span className="text-orange-600 font-semibold">About The Event</span>
             <h2 className="mt-2 text-3xl md:text-4xl font-heading font-extrabold bg-gradient-to-r from-orange-500 to-blue-600 text-transparent bg-clip-text">
-              Welcome to Agaaz 2K25
+              Welcome to Sangrila 2k26
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-blue-600 mx-auto mt-4 rounded-full" />
           </motion.div>
@@ -41,8 +41,8 @@ export default function AboutSection() {
           >
             <div className="relative rounded-2xl overflow-hidden shadow-xl group">
               <Image
-                src="/akhil2k25.jpeg"
-                alt="Agaaz Event"
+                src="/asees2k26.jpeg"
+                alt="Sangrila Event"
                 width={1074}
                 height={720}
                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
@@ -65,29 +65,29 @@ export default function AboutSection() {
             className="space-y-5"
           >
             <p className="text-xl font-bold text-gray-800">
-              🎉 Agaaz 2K25 – The Ultimate Fest Experience!
+              🎉 Sangrila 2k26 – The Ultimate Fest Experience!
             </p>
             <p className="text-gray-700 leading-relaxed">
-              Get ready for the most electrifying event of the year! Agaaz 2K25 is back,
+              Get ready for the most electrifying event of the year! Sangrila 2k26 is back,
               bigger and better than ever. Brace yourself for an unforgettable night with
               chart-topping hits and unstoppable vibes!
             </p>
             <ul className="grid sm:grid-cols-2 gap-2 text-gray-700">
-              <li>🔥 Live Performance by Akhil</li>
+              <li>🔥 Live Performance by Asees Kaur</li>
               <li>🎶 Unstoppable Music & Vibes</li>
               <li>🎭 Cultural & Fun Activities</li>
               <li>🎊 A Night to Remember!</li>
             </ul>
             <p className="text-gray-700">
-              Mark your calendars and get set to groove to the beats of Agaaz 2K25! Stay
+              Mark your calendars and get set to groove to the beats of Sangrila 2k26! Stay
               tuned for more updates and book your passes soon.
             </p>
             <ul className="text-gray-700">
               <li>📍 Venue: Geeta University</li>
-              <li>📅 Date: 4th Oct 2025</li>
+              <li>📅 Date: 13th - 14th March, 2026</li>
             </ul>
             <p className="text-gray-700">Let’s make memories that last a lifetime!</p>
-            <p className="text-gray-700">🚀✨ #Agaaz2K25 #AkhilLive #FresherVibes</p>
+            <p className="text-gray-700">🚀✨ #Agaaz2K25 #AseesLive #FresherVibes</p>
 
             {/* info cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">

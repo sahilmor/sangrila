@@ -23,14 +23,14 @@ export async function POST(req: Request) {
         const qrBuffer = Buffer.from(base64Data, "base64");
 
         await transporter.sendMail({
-            from: `"Agaaz 2k25" <${process.env.EMAIL_USER}>`,
+            from: `"Sangrila 2k26" <${process.env.EMAIL_USER}>`,
             to: email,
-            subject: "Your Agaaz 2k25 Check-in QR Code",
+            subject: "Your Sangrila 2k26 Check-in QR Code",
             html: `
                 <h2>Dear User,</h2>
-                <p>Please find attached your check-in QR code for Agaaz 2K25. Kindly present this QR code to the officials at the entry gate of Geeta University.</p>
+                <p>Please find attached your check-in QR code for Sangrila 2k26. Kindly present this QR code to the officials at the entry gate of Geeta University.</p>
                 <p><strong>Event Details:</strong></p>
-                <p><strong>Date:</strong> 4th Oct 2025</p>
+                <p><strong>Date:</strong> 13th - 14th March, 2026</p>
                 <p><strong>Venue:</strong> Geeta University</p>
                 
                 <h2>Important Notice Regarding Your QR Code</h2>
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
 <hr />
 
-<p><em>This is an automated message from the Agaaz 2k25 Registration Team. Please do not reply to this email.</em></p>
+<p><em>This is an automated message from the Sangrila 2k26 Registration Team. Please do not reply to this email.</em></p>
 
                 <p>Looking forward to welcoming you!</p>
                 <p><strong>Best regards,</strong></p>

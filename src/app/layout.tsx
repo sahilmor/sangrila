@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Agaaz 2k25",
+  title: "Sangrila 2k26",
   description: "Annual Fest 2025",
 };
 

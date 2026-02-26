@@ -29,7 +29,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 parallax-bg will-change-transform">
         <Image
           src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=1920&q=75&auto=format&fit=crop"
-          alt="Agaaz Event"
+          alt="Sangrila Event"
           fill
           className="object-cover"
           priority
@@ -49,7 +49,7 @@ export default function HeroSection() {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 bg-white/10 text-white backdrop-blur-md py-1.5 px-5 rounded-full text-sm font-medium"
           >
-            4th Oct, 2025 • Geeta University
+            13th - 14th March, 2026 • Geeta University
           </motion.span>
 
           <motion.h1
@@ -58,9 +58,9 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
           >
-            Agaaz{" "}
+            Sangrila{" "}
             <span className="bg-gradient-to-r from-orange-500 to-blue-500 text-transparent bg-clip-text">
-              2K25
+              2K26
             </span>
           </motion.h1>
 

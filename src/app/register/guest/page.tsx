@@ -131,7 +131,7 @@ export default function GuestRegistration() {
         {/* Header */}
         <CardHeader className="bg-gradient-to-r from-orange-500 to-blue-600 p-8 text-center text-white">
           <CardTitle className="text-4xl font-extrabold drop-shadow-lg">
-            Agaaz 2k25
+            Sangrila 2k26
           </CardTitle>
           <CardDescription className="text-orange-100 text-lg">
             Guest Registration
