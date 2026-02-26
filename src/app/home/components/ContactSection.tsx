@@ -137,7 +137,7 @@ export default function ContactSection() {
                     </span>
                     <div>
                       <h4 className="font-medium">Phone</h4>
-                      <p className="text-gray-600 mt-1">+91 ‪98177 03733‬</p>
+                      <p className="text-gray-600 mt-1">+91 99960 26756</p>
                     </div>
                   </div>
                   <div className="flex items-start">

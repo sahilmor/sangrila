@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     const totalAfterDiscount = baseAmount - discount;
 
-    const qrCodeURL = await QRCode.toDataURL(`https://sangrila2k26.geetauniversity.edu.in/checkin?regId=${registrationId}`);
+    const qrCodeURL = await QRCode.toDataURL(`https://sangrila.geetauniversity.edu.in/checkin?regId=${registrationId}`);
 
     const newGuest = new GuestDetails({
       ...data,
@@ -82,7 +82,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error saving guest:", error);
-    console.error("🔥 API Error in /api/guest:", error);
     return NextResponse.json({ success: false, message: "Failed to register guest." }, { status: 500 });
   }
 }
