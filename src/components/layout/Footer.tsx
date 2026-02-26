@@ -14,26 +14,7 @@ const Footer = () => {
               Join us for the most exciting cultural event of the year. Connect with alumni,
               enjoy performances, and celebrate together.
             </p>
-            <div className="flex space-x-4">
-              <a
-                href="#"
-                aria-label="Facebook"
-              >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="#"
-                aria-label="Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="#"
-                aria-label="Twitter"
-              >
-                <Twitter size={20} />
-              </a>
-            </div>
+           
           </div>
 
           <div>
