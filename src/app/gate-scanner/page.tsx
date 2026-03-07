@@ -29,7 +29,8 @@ export default function GateScannerPage() {
       await scanner.start(
         { facingMode: "environment" },
         { fps: 12, qrbox: 250 },
-        onScanSuccess
+        onScanSuccess,
+        () => {}
       );
 
     };
