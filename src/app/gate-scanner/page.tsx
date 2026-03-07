@@ -141,6 +141,10 @@ export default function GateScannerPage() {
   <h2 className="font-bold text-lg">
     Registration: {registrationId}
   </h2>
+  <p>Total Members: {members.length}</p>
+  <p>Checked In: {members.filter(m => m.checkedIn).length}</p>
+  <p>Remaining: {members.length - members.filter(m => m.checkedIn).length}</p>
+
 
   {members.map((member,index)=>(
     
