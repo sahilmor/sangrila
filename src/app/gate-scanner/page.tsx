@@ -52,7 +52,9 @@ export default function GateScannerPage() {
 
       if (!regId) return;
 
-      navigator.vibrate?.(200); // vibration
+      if (navigator.vibrate) {
+  navigator.vibrate([200, 50, 200]);
+}
 
       setScanning(false);
 
@@ -114,20 +116,17 @@ export default function GateScannerPage() {
     const allChecked = updated.every(m => m.checkedIn);
 
     if(allChecked){
-
-      toast.success("All guests checked in");
-
-      setTimeout(()=>{
-        resetScanner();
-      },1500);
-
-    }
+  toast.success("All guests checked in");
+  setTimeout(()=>{
+    resetScanner();
+  },1500);
+}
 
   };
 
   return (
 
-    <div className="p-6 flex flex-col items-center gap-6">
+    <div className="p-6 flex flex-col items-center gap-6 mt-24">
 
       {scanning && (
         <Card className="p-4 w-full max-w-md">
@@ -139,38 +138,47 @@ export default function GateScannerPage() {
 
         <Card className="p-6 w-full max-w-md space-y-4">
 
-          <h2 className="font-bold text-lg">
-            Registration: {registrationId}
-          </h2>
+  <h2 className="font-bold text-lg">
+    Registration: {registrationId}
+  </h2>
 
-          {members.map((member,index)=>(
-            
-            <div
-              key={index}
-              className="flex justify-between items-center border p-3 rounded"
-            >
+  {members.map((member,index)=>(
+    
+    <div
+      key={index}
+      className="flex justify-between items-center border p-3 rounded"
+    >
 
-              <div>
-                <p className="font-semibold">{member.name}</p>
-                <p className="text-sm">
-                  {member.checkedIn ? "Checked In" : "Not Checked In"}
-                </p>
-              </div>
+      <div>
+        <p className="font-semibold">{member.name}</p>
+        <p className="text-sm">
+          {member.checkedIn ? "Checked In" : "Not Checked In"}
+        </p>
+      </div>
 
-              {!member.checkedIn && (
-                <Button
-                  size="sm"
-                  onClick={()=>handleCheckIn(index)}
-                >
-                  Check In
-                </Button>
-              )}
+      {!member.checkedIn && (
+        <Button
+          size="sm"
+          onClick={()=>handleCheckIn(index)}
+        >
+          Check In
+        </Button>
+      )}
 
-            </div>
+    </div>
 
-          ))}
+  ))}
 
-        </Card>
+  {/* Scan Next Button */}
+
+  <Button
+    className="w-full mt-4"
+    onClick={resetScanner}
+  >
+    Scan Next Guest
+  </Button>
+
+</Card>
 
       )}
 
