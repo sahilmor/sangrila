@@ -4,41 +4,55 @@ import GuestDetails from "@/models/Guest";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
-import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
-    console.log("📥 Receiving guest registration request...");
     await connectToDatabase();
 
-    console.log("📂 Database Models initialized:", Object.keys(mongoose.models));
     const data = await req.json();
+
+    const {
+      members,
+      coupon,
+      discountPercentage,
+      totalMembers,
+      totalAmount,
+      utrNumber,
+    } = data;
+
+    const primaryMember = members[0];
+
     const registrationId = uuidv4();
-    const registrationType = "guest";
 
-     const baseAmount = 1000;
+    const qrCodeURL = await QRCode.toDataURL(
+      `https://sangrila.geetauniversity.edu.in/checkin?regId=${registrationId}`
+    );
 
-       const discount = data.appliedCoupon && data.discountPercentage
-      ? (baseAmount * data.discountPercentage) / 100
-      : 0;
-
-    const totalAfterDiscount = baseAmount - discount;
-
-    const qrCodeURL = await QRCode.toDataURL(`https://sangrila.geetauniversity.edu.in/checkin?regId=${registrationId}`);
+    console.log("Generated QR:", qrCodeURL.substring(0,50));
+    console.log("Saving guest with QR:", qrCodeURL.length);
 
     const newGuest = new GuestDetails({
-      ...data,
       registrationId,
-      registrationType,
+      registrationType: "guest",
+
+      members,
+      totalMembers,
+      totalAmount,
+
+      appliedCoupon: coupon,
+      discountPercentage,
+
+      utrNumber,
+
       qrCode: qrCodeURL,
-      totalAmount: data.totalAmount,
-      totalAfterDiscount,
-      referredBy: data.referredBy,         // 🆕
-  referenceContact: data.referenceContact, // 🆕
+
+      paymentStatus: "pending",
+      qrSent: false,
     });
 
     await newGuest.save();
 
+    // EMAIL CONFIG
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -47,41 +61,56 @@ export async function POST(req: Request) {
       },
     });
 
+    // EMAIL TO USER
     await transporter.sendMail({
       from: `"Sangrila 2k26" <${process.env.EMAIL_USER}>`,
-      to: data.email,
+      to: primaryMember.email,
       subject: "Sangrila 2k26 Registration Confirmation",
       html: `
-        <h2>Welcome, ${data.name}!</h2>
+        <h2>Welcome, ${primaryMember.name}!</h2>
         <p>Your registration for Sangrila 2k26 is successful.</p>
-        <p>Your Registration ID: <strong>${registrationId}</strong></p>
+
+        <p><strong>Registration ID:</strong> ${registrationId}</p>
+
+        <p>Total Members: ${totalMembers}</p>
+        <p>Total Amount Paid: ₹${totalAmount}</p>
+
         <p>After verifying your payment, your check-in ticket will be sent to your email.</p>
-        <p>We look forward to seeing you at the event!</p>
-        <p>Regards,</p>
-        <p>Geeta University</p>
+
+        <p>Regards,<br/>Geeta University</p>
       `,
     });
 
+    // EMAIL TO ADMIN
     await transporter.sendMail({
       from: `"Sangrila 2k26" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
       subject: "New Guest Registered",
       html: `
-        <h3>A New Guest has Registered</h3>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>WhatsApp:</strong> ${data.whatsapp}</p>
-        <p><strong>Registration Type:</strong> ${registrationType}</p>
+        <h3>New Registration</h3>
+
+        <p><strong>Name:</strong> ${primaryMember.name}</p>
+        <p><strong>Email:</strong> ${primaryMember.email}</p>
+        <p><strong>Members:</strong> ${totalMembers}</p>
+        <p><strong>Total Paid:</strong> ₹${totalAmount}</p>
+        <p><strong>UTR:</strong> ${utrNumber}</p>
       `,
     });
 
     return NextResponse.json({
       success: true,
       registrationId,
-      message: "Guest registered successfully! Check-in ticket will be provided after payment verification.",
+      message: "Guest registered successfully",
     });
   } catch (error) {
-    console.error("Error saving guest:", error);
-    return NextResponse.json({ success: false, message: "Failed to register guest." }, { status: 500 });
+    console.error("Registration Error:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to register guest.",
+      },
+      { status: 500 }
+    );
   }
 }

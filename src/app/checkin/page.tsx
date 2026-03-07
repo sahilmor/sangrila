@@ -6,123 +6,227 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+type Member = {
+  name: string;
+  email: string;
+  whatsapp?: string;
+  checkedIn: boolean;
+};
+
+type ApiResponse = {
+  success: boolean;
+  message?: string;
+  registrationId?: string;
+  totalMembers?: number;
+  checkedIn?: number;
+  remaining?: number;
+  members?: Member[];
+};
+
 const CheckInContent = () => {
+
   const searchParams = useSearchParams();
   const regId = searchParams.get("regId");
+
   const [loading, setLoading] = useState(true);
-  const [checkingIn, setCheckingIn] = useState(false)
-  const [userData, setUserData] = useState<{
-    success: boolean;
-    message: string;
-    type?: "guest";
-    data?: {
-      name: string;
-      email: string;
-      whatsapp: string;
-      additionalMembers: number;
-      checkedIn: boolean;
-    };
-  } | null>(null);
-  
+  const [checking, setChecking] = useState<number | null>(null);
+  const [data, setData] = useState<ApiResponse | null>(null);
 
   useEffect(() => {
+
     if (!regId) return;
 
-    const verifyRegistration = async () => {
+    const loadData = async () => {
+
       try {
-        const response = await fetch(`/api/verifyRegisteration?regId=${regId}`);
-        const result = await response.json();
-        setUserData(result);
+
+        const res = await fetch(`/api/verifyRegisteration?regId=${regId}`);
+        const result = await res.json();
+
+        setData(result);
+
       } catch {
-        setUserData({ success: false, message: "Error verifying registration" });
+
+        toast.error("Error verifying registration");
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
-    verifyRegistration();
+    loadData();
+
   }, [regId]);
 
-  const handleCheckIn = async () => {
+  const handleCheckIn = async (memberIndex: number) => {
+
     if (!regId) return;
-    setCheckingIn(true);
+
+    setChecking(memberIndex);
+
     try {
-      const response = await fetch(`/api/checkin`, {
+
+      const res = await fetch("/api/checkin", {
         method: "POST",
-        body: JSON.stringify({ regId }),
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          regId,
+          memberIndex
+        })
       });
 
-      const result = await response.json();
+      const result = await res.json();
 
-      if (result.success) {
-        setUserData((prev) => prev && {
-          ...prev,
-          guest: {
-            ...prev.data!,
-            checkedIn: true,
-          },
-        });
-
-        toast.success("Check-in successful!");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      } else {
-        toast.error(result.message || "Check-in failed");
+      if (!result.success) {
+        toast.error(result.message);
+        return;
       }
-    } catch (error) {
-      toast.error("Check-in error occurred");
-      console.error("Check-in error:", error);
+
+      toast.success("Member checked in");
+
+      // Update UI locally
+      setData(prev => {
+
+        if (!prev || !prev.members) return prev;
+
+        const updatedMembers = [...prev.members];
+
+        updatedMembers[memberIndex].checkedIn = true;
+
+        const checked = updatedMembers.filter(m => m.checkedIn).length;
+
+        return {
+          ...prev,
+          members: updatedMembers,
+          checkedIn: checked,
+          remaining: updatedMembers.length - checked
+        };
+
+      });
+
+    } catch (err) {
+
+      toast.error("Check-in failed");
+
     } finally {
-      setCheckingIn(false);
+
+      setChecking(null);
+
     }
+
   };
 
   return (
-    <Card className="w-full max-w-md shadow-lg">
+
+    <Card className="w-full max-w-lg shadow-lg">
+
       <CardHeader>
+
         <CardTitle>Event Check-In</CardTitle>
-        <CardDescription>We warmly welcome you to the event</CardDescription>
+
+        <CardDescription>
+          Scan verified ticket
+        </CardDescription>
+
       </CardHeader>
+
       <CardContent>
+
         {loading ? (
-          <p>Checking registration...</p>
-        ) : userData?.success && userData.data ? (
-          <div className="space-y-3">
-            <p><strong>Name:</strong> {userData.data.name}</p>
-            <p><strong>Email:</strong> {userData.data.email}</p>
-            <p><strong>Phone:</strong> {userData.data.whatsapp}</p>
-            <p><strong>Additional Members:</strong> {userData.data.additionalMembers}</p>
-            <p className={userData.data.checkedIn ? "text-green-600" : "text-red-600"}>
-              <strong>Status:</strong> {userData.data.checkedIn ? "Checked In" : "Not Checked In"}
-            </p>
-            {!userData.data.checkedIn && (
-              <Button
-                onClick={handleCheckIn}
-                className="w-full cursor-pointer"
-                disabled={checkingIn}
-              >
-                {checkingIn ? "Checking In..." : "Check In"}
-              </Button>
-            )}
-          </div>
+
+          <p>Loading registration...</p>
+
+        ) : !data?.success ? (
+
+          <p className="text-red-500">
+            {data?.message || "Invalid ticket"}
+          </p>
+
         ) : (
-          <p className="text-red-500">{userData?.message || "User not found"}</p>
+
+          <div className="space-y-4">
+
+            <div className="border p-3 rounded">
+
+              <p><strong>Registration ID:</strong> {data.registrationId}</p>
+              <p><strong>Total Members:</strong> {data.totalMembers}</p>
+              <p><strong>Checked In:</strong> {data.checkedIn}</p>
+              <p><strong>Remaining:</strong> {data.remaining}</p>
+
+            </div>
+
+            <div className="space-y-3">
+
+              {data.members?.map((member, index) => (
+
+                <div
+                  key={index}
+                  className="border rounded p-3 flex justify-between items-center"
+                >
+
+                  <div>
+
+                    <p className="font-semibold">
+                      {member.name}
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                      {member.checkedIn ? "Checked In" : "Not Checked In"}
+                    </p>
+
+                  </div>
+
+                  {!member.checkedIn && (
+
+                    <Button
+                      size="sm"
+                      onClick={() => handleCheckIn(index)}
+                      disabled={checking === index}
+                    >
+                      {checking === index ? "Checking..." : "Check In"}
+                    </Button>
+
+                  )}
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
         )}
+
       </CardContent>
+
     </Card>
+
   );
+
 };
 
 const CheckInPage = () => {
+
   return (
-    <div className="p-6 flex justify-center items-center h-[90dvh]">
+
+    <div className="p-6 flex justify-center items-center min-h-[90vh]">
+
       <Suspense fallback={<p>Loading...</p>}>
+
         <CheckInContent />
+
       </Suspense>
+
     </div>
+
   );
+
 };
 
 export default CheckInPage;

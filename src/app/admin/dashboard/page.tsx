@@ -1,334 +1,444 @@
 'use client';
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
 import {
-    Card, CardContent, CardDescription, CardHeader, CardTitle
+  Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Download, FileText, LogOut, Menu, Send, Ticket } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger
+} from "@/components/ui/dialog";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 
-interface UserDetails {
-    registrationId: string;
-    name: string;
-    email: string;
-    whatsapp: string;
-    address: string;
-    registrationType: string;
-    additionalMembers: number;
-    paymentStatus: string;
-    qrCode: string;
-    qrSent: boolean;
-    totalAmount: number;
-    utrNumber?: string;
-    referredBy?: { type: String },
-    referenceContact?: { type: Number },
-    createdAt: string;
-    appliedCoupon?: string;
-    couponDetails?: {
-        name: string;
-        assignedTo: string;
-        discount: number;
-    } | null;
+interface Member {
+  name: string;
+  email: string;
+  whatsapp?: string;
+  address?: string;
 }
 
+interface Registration {
+  registrationId: string;
+  members: Member[];
+  totalMembers: number;
+  paymentStatus: string;
+  qrCode: string;
+  qrSent: boolean;
+  totalAmount: number;
+  utrNumber?: string;
+  appliedCoupon?: string;
+  discountPercentage?: number;
+  createdAt: string;
+}
 
-const AdminDashboard = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [userDetails, setUserDetails] = useState<UserDetails[]>([]);
-    const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
-    const [sendingQr, setSendingQr] = useState<{ [key: string]: boolean }>({});
-    const [stats, setStats] = useState({
-        totalRegistrations: 0,
+export default function AdminDashboard() {
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [selectedUser, setSelectedUser] = useState<Registration | null>(null);
+  const [sendingQr, setSendingQr] = useState<{ [key: string]: boolean }>({});
+
+  const [stats, setStats] = useState({
+    totalRegistrations: 0
+  });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+
+    setIsLoading(true);
+
+    try {
+
+      const res = await fetch("/api/admin/registerations");
+      const data = await res.json();
+
+      setRegistrations(data);
+
+      setStats({
+        totalRegistrations: data.length
+      });
+
+    } catch {
+      toast.error("Failed to load registrations");
+    }
+
+    setIsLoading(false);
+  };
+
+  const exportUserDetailsToExcel = () => {
+
+    const headers = [
+      "Registration ID",
+      "Primary Name",
+      "Primary Email",
+      "Phone",
+      "Total Members",
+      "UTR",
+      "Coupon",
+      "Total Amount",
+      "Payment Status",
+      "Created At"
+    ];
+
+    let csv = "\uFEFF" + headers.join(",") + "\n";
+
+    registrations.forEach(reg => {
+
+      const primary = reg.members[0];
+
+      const row = [
+        reg.registrationId,
+        primary?.name || "",
+        primary?.email || "",
+        primary?.whatsapp || "",
+        reg.totalMembers,
+        reg.utrNumber || "",
+        reg.appliedCoupon || "",
+        reg.totalAmount,
+        reg.paymentStatus,
+        new Date(reg.createdAt).toLocaleString("en-IN")
+      ].map(x => `"${x}"`).join(",");
+
+      csv += row + "\n";
+
     });
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const blob = new Blob([csv], { type: "text/csv" });
 
-    const fetchData = async () => {
-        setIsLoading(true);
-        try {
-            const response = await fetch("/api/admin/registerations");
-            const data = await response.json();
+    const url = URL.createObjectURL(blob);
 
-            setUserDetails(data);
+    const a = document.createElement("a");
 
-            const totalRegistrations = data.length;
-            const totalGuests = data.filter((user: UserDetails) => user.registrationType.toLowerCase() === "guest").length;
+    a.href = url;
+    a.download = "registrations.csv";
 
-            setStats({ totalRegistrations });
-        } catch {
-            toast.error("Failed! Please try again.");
-        }
-        setIsLoading(false);
-    };
+    a.click();
+  };
 
-    const asText = (value: any) => {
-        if (!value) return "";
-        return `="${String(value)}"`;  // Excel इसे text रखेगा
-    };
+  const sendQRCode = async (user: Registration) => {
 
-    const formatDate = (dateString: string) => {
-        if (!dateString) return "N/A";
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-IN', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(date);
-    };
+  setSendingQr(prev => ({ ...prev, [user.registrationId]: true }));
 
-    const exportUserDetailsToExcel = () => {
-        const headers = [
-            "Registration ID",
-            "Name",
-            "Email",
-            "Phone",
-            "Registration Type",
-            "UTR Number",
-            "Referred By",
-            "Reference Contact",
-            "Payment Status",
-            "Created At"
-        ];
+  try {
 
-        let csvContent = "\uFEFF" + headers.join(",") + "\r\n"; // BOM + headers
+    const primary = user.members?.[0];
 
-        userDetails.forEach(user => {
-            const row = [
-                `"${user.registrationId}"`,
-                `"${user.name}"`,
-                `"${user.email}"`,
-                asText(user.whatsapp || ""),     // Phone as text
-                `"${user.registrationType}"`,
-                asText(user.utrNumber || ""),    // UTR as text
-                `"${user.referredBy || ""}"`,
-                asText(user.referenceContact || ""), // Reference contact as text
-                `"${user.paymentStatus}"`,
-                `"${new Date(user.createdAt).toLocaleString("en-IN")}"`,
-            ].join(",");
+    if (!primary?.email) {
+      toast.error("Primary member email missing");
+      return;
+    }
 
-            csvContent += row + "\r\n";
-        });
+    if (!user.qrCode) {
+      toast.error("QR code not generated yet");
+      return;
+    }
 
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "user_details.csv";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    };
+    const response = await fetch("/api/sendQr", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: primary.email,
+        qrCodeImage: user.qrCode,
+        name: primary.name,
+        registrationId: user.registrationId,
+        totalMembers: user.totalMembers
+      })
+    });
 
+    const data = await response.json();
 
-    const sendQRCode = async (user: UserDetails) => {
-        setSendingQr((prev) => ({ ...prev, [user.registrationId]: true }));
-        try {
-            const response = await fetch("/api/sendQr", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: user.email, qrCodeImage: user.qrCode }),
-            });
+    if (!response.ok) throw new Error(data.message);
 
-            const data = await response.json();
-            if (response.ok) {
-                toast.success("QR code sent successfully!");
+    toast.success("QR code sent successfully");
 
-                await fetch("/api/updateQrStatus", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ registrationId: user.registrationId }),
-                });
+    await fetch("/api/updateQrStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        registrationId: user.registrationId
+      })
+    });
 
-                setUserDetails((prev) =>
-                    prev.map((u) =>
-                        u.registrationId === user.registrationId ? { ...u, qrSent: true } : u
-                    )
-                );
-            } else {
-                toast.error(data.message || "Failed to send QR code");
-            }
-        } catch (error) {
-            console.error("QR Code Sending Error:", error);
-            toast.error("Error sending QR code");
-        } finally {
-            setSendingQr((prev) => ({ ...prev, [user.registrationId]: false }));
-        }
-    };
-
-    return (
-        <div className="py-20 px-6 md:px-12 max-w-7xl mx-auto mt-6">
-            <div className="mb-12 flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-heading font-bold">Admin Dashboard</h1>
-                    <p className="mt-2 text-gray-600">Manage registration details</p>
-                </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Menu size={24} />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <Link href="/admin/dashboard">
-                            <DropdownMenuItem>
-                                <Menu size={16} className="mr-2" />
-                                Dashboard
-                            </DropdownMenuItem>
-                        </Link>
-                        <Link href="/admin/coupons">
-                            <DropdownMenuItem>
-                                <Ticket size={16} className="mr-2" />
-                                Manage Coupons
-                            </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })} className="text-red-500">
-                            <LogOut size={16} className="mr-2" />
-                            Logout
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-
-            {/* Stats Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Total Registrations</CardTitle>
-                        <CardDescription>All user registrations</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{stats.totalRegistrations}</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* User Table */}
-            <div className="bg-white rounded-xl p-8 shadow-subtle">
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex justify-end w-full">
-                        <Button onClick={exportUserDetailsToExcel} className="flex gap-2 items-center cursor-pointer">
-                            <Download size={16} />
-                            Export to CSV
-                        </Button>
-                    </div>
-                </div>
-
-                {isLoading ? (
-                    <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-Agaaz-600 mx-auto mb-4"></div>
-                        <p>Loading user registrations...</p>
-                    </div>
-                ) : userDetails.length > 0 ? (
-                    <div className="rounded-md border overflow-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Phone</TableHead>
-                                    <TableHead>Details</TableHead>
-                                    <TableHead>Payment Verified</TableHead>
-                                    <TableHead>Send QR Ticket</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {userDetails.map((user) => (
-                                    <TableRow key={user.registrationId || user.email || Math.random()}>
-                                        <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{user.whatsapp || "-"}</TableCell>
-                                        <TableCell>
-                                            <Dialog>
-                                                <DialogTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="flex items-center gap-1"
-                                                        onClick={() => setSelectedUser(user)}
-                                                    >
-                                                        <FileText size={14} />
-                                                        View
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent>
-                                                    <DialogHeader>
-                                                        <DialogTitle>User Details</DialogTitle>
-                                                    </DialogHeader>
-                                                    {selectedUser && (
-                                                        <div className="space-y-4">
-                                                            <p><strong>ID:</strong> {selectedUser.registrationId}</p>
-                                                            <p><strong>Name:</strong> {selectedUser.name}</p>
-                                                            <p><strong>Email:</strong> {selectedUser.email}</p>
-                                                            <p><strong>Phone:</strong> {selectedUser.whatsapp || "-"}</p>
-                                                            <p><strong>Registration Type:</strong> {selectedUser.registrationType}</p>
-                                                            <p><strong>Additional Members:</strong> {selectedUser.additionalMembers}</p>
-                                                            <p><strong>Payment Status:</strong> {selectedUser.paymentStatus}</p>
-                                                            <p><strong>Total Payment:</strong> {selectedUser.totalAmount}</p>
-                                                            <p><strong>UTR Number:</strong> {selectedUser.utrNumber}</p>
-                                                            
-
-
-                                                            {selectedUser.couponDetails ? (
-                                                                <div className="border-t pt-4 mt-4 space-y-4">
-                                                                    <h3 className="text-lg font-semibold">Coupon Details</h3>
-                                                                    <p><strong>Coupon Code:</strong> {selectedUser.couponDetails.name}</p>
-                                                                    <p><strong>Assigned To:</strong> {selectedUser.couponDetails.assignedTo}</p>
-                                                                    <p><strong>Discount:</strong> {selectedUser.couponDetails.discount}%</p>
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-gray-500">No coupon applied.</p>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </DialogContent>
-                                            </Dialog>
-
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.paymentStatus === "verified" ? (
-                                                <Badge variant="default" className="text-green-600 bg-green-100">
-                                                    Verified
-                                                </Badge>
-                                            ) : user.paymentStatus === "failed" ? (
-                                                <Badge variant="destructive" className="text-red-600 bg-red-100">
-                                                    Failed
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="outline" className="text-yellow-600 bg-yellow-100">
-                                                    Pending
-                                                </Badge>
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <Button size="sm" className="flex items-center gap-1 cursor-pointer" onClick={() => sendQRCode(user)} disabled={sendingQr[user.registrationId] || user.qrSent}>
-                                                <Send size={14} />
-                                                {user.qrSent ? "Sent" : sendingQr[user.registrationId] ? "Sending..." : "Send QR"}
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                ) : (
-                    <div className="text-center py-12">No user registrations found.</div>
-                )}
-            </div>
-        </div>
+    setRegistrations(prev =>
+      prev.map(r =>
+        r.registrationId === user.registrationId
+          ? { ...r, qrSent: true }
+          : r
+      )
     );
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to send QR code");
+  }
+
+  setSendingQr(prev => ({ ...prev, [user.registrationId]: false }));
+
 };
 
-export default AdminDashboard;
+  return (
+    <div className="py-20 px-6 md:px-12 max-w-7xl mx-auto">
+
+      {/* Header */}
+
+      <div className="mb-12 flex justify-between">
+
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-gray-600">Manage registrations</p>
+        </div>
+
+        <DropdownMenu>
+
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end">
+
+            <Link href="/admin/dashboard">
+              <DropdownMenuItem>
+                Dashboard
+              </DropdownMenuItem>
+            </Link>
+
+            <Link href="/admin/coupons">
+              <DropdownMenuItem>
+                <Ticket className="mr-2" size={16} />
+                Coupons
+              </DropdownMenuItem>
+            </Link>
+
+            <DropdownMenuItem
+              className="text-red-500"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+            >
+              <LogOut className="mr-2" size={16} />
+              Logout
+            </DropdownMenuItem>
+
+          </DropdownMenuContent>
+
+        </DropdownMenu>
+
+      </div>
+
+      {/* Stats */}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+        <Card>
+
+          <CardHeader>
+            <CardTitle>Total Registrations</CardTitle>
+            <CardDescription>All bookings</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <p className="text-3xl font-bold">
+              {stats.totalRegistrations}
+            </p>
+          </CardContent>
+
+        </Card>
+
+      </div>
+
+      {/* Table */}
+
+      <div className="bg-white rounded-xl p-8 shadow">
+
+        <div className="flex justify-end mb-6">
+
+          <Button onClick={exportUserDetailsToExcel}>
+            <Download className="mr-2" size={16} />
+            Export CSV
+          </Button>
+
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-10">Loading...</div>
+        ) : registrations.length === 0 ? (
+          <div className="text-center py-10">No registrations</div>
+        ) : (
+
+          <div className="border rounded-lg overflow-auto">
+
+            <Table>
+
+              <TableHeader>
+
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Members</TableHead>
+                  <TableHead>UTR</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>QR Ticket</TableHead>
+                  <TableHead>Details</TableHead>
+                </TableRow>
+
+              </TableHeader>
+
+              <TableBody>
+
+                {registrations.map(user => {
+
+                  const primary = user.members[0];
+
+                  return (
+
+                    <TableRow key={user.registrationId}>
+
+                      <TableCell>{primary?.name}</TableCell>
+
+                      <TableCell>{primary?.email}</TableCell>
+
+                      <TableCell>{user.totalMembers}</TableCell>
+
+                      <TableCell>{user.utrNumber}</TableCell>
+
+                      <TableCell>
+
+                        {user.paymentStatus === "verified" && (
+                          <Badge className="bg-green-100 text-green-600">
+                            Verified
+                          </Badge>
+                        )}
+
+                        {user.paymentStatus === "pending" && (
+                          <Badge className="bg-yellow-100 text-yellow-600">
+                            Pending
+                          </Badge>
+                        )}
+
+                        {user.paymentStatus === "failed" && (
+                          <Badge className="bg-red-100 text-red-600">
+                            Failed
+                          </Badge>
+                        )}
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        <Button
+                          size="sm"
+                          onClick={() => sendQRCode(user)}
+                          disabled={user.qrSent || sendingQr[user.registrationId]}
+                        >
+
+                          <Send size={14} className="mr-1" />
+
+                          {user.qrSent
+                            ? "Sent"
+                            : sendingQr[user.registrationId]
+                              ? "Sending..."
+                              : "Send QR"
+                          }
+
+                        </Button>
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        <Dialog>
+
+                          <DialogTrigger asChild>
+
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setSelectedUser(user)}
+                            >
+
+                              <FileText size={14} className="mr-1" />
+                              View
+
+                            </Button>
+
+                          </DialogTrigger>
+
+                          <DialogContent>
+
+                            <DialogHeader>
+                              <DialogTitle>User Details</DialogTitle>
+                            </DialogHeader>
+
+                            {selectedUser && (
+
+                              <div className="space-y-3">
+
+                                <p><b>ID:</b> {selectedUser.registrationId}</p>
+
+                                <p><b>Total Members:</b> {selectedUser.totalMembers}</p>
+
+                                <p><b>Total Amount:</b> ₹{selectedUser.totalAmount}</p>
+
+                                <p><b>UTR:</b> {selectedUser.utrNumber}</p>
+
+                                <p><b>Coupon:</b> {selectedUser.appliedCoupon || "None"}</p>
+
+                                <p className="font-semibold mt-4">Members</p>
+
+                                {selectedUser.members.map((m, i) => (
+
+                                  <div key={i} className="border p-2 rounded">
+
+                                    <p><b>Name:</b> {m.name}</p>
+                                    <p><b>Email:</b> {m.email}</p>
+                                    <p><b>Phone:</b> {m.whatsapp || "-"}</p>
+
+                                  </div>
+
+                                ))}
+
+                              </div>
+
+                            )}
+
+                          </DialogContent>
+
+                        </Dialog>
+
+                      </TableCell>
+
+                    </TableRow>
+
+                  );
+                })}
+
+              </TableBody>
+
+            </Table>
+
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+  );
+}

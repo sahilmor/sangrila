@@ -3,20 +3,43 @@ import GuestDetails from "@/models/Guest";
 
 export async function POST(req: NextRequest) {
   try {
-    const { regId } = await req.json();
-    if (!regId) {
-      return NextResponse.json({ success: false, message: "Missing registration ID" }, { status: 400 });
+    const { regId, memberIndex } = await req.json();
+
+    if (!regId || memberIndex === undefined) {
+      return NextResponse.json(
+        { success: false, message: "Missing registration ID or member index" },
+        { status: 400 }
+      );
     }
 
-    const guest = await GuestDetails.findOneAndUpdate(
-      { registrationId: regId },
-      { checkedIn: true },
-      { new: true }
-    );
+    const guest = await GuestDetails.findOne({ registrationId: regId });
 
-    return NextResponse.json({ success: true, message: "Check-in successful (Guest)", guest });
+    if (!guest) {
+      return NextResponse.json({ success: false, message: "Guest not found" });
+    }
+
+    if (guest.members[memberIndex].checkedIn) {
+      return NextResponse.json({
+        success: false,
+        message: "Member already checked in"
+      });
+    }
+
+    guest.members[memberIndex].checkedIn = true;
+
+    await guest.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Member checked in successfully",
+      guest
+    });
+
   } catch (error) {
-    console.error("Check-in error:", error);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Server error" },
+      { status: 500 }
+    );
   }
 }
