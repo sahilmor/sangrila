@@ -22,11 +22,9 @@ export default function GateScannerPage() {
 
   const startScanner = async () => {
 
-  if (!scannerRef.current) {
-    scannerRef.current = new Html5Qrcode("reader");
-  }
-
   try {
+
+    scannerRef.current = new Html5Qrcode("reader");
 
     await scannerRef.current.start(
       { facingMode: "environment" },
@@ -73,6 +71,7 @@ export default function GateScannerPage() {
 }
 
 await scannerRef.current?.stop();
+await scannerRef.current?.clear();
 
       setScanning(false);
 
@@ -95,7 +94,20 @@ await scannerRef.current?.stop();
 
   };
 
-  const resetScanner = async () => {
+const resetScanner = async () => {
+
+  try {
+
+    if (scannerRef.current) {
+
+      await scannerRef.current.stop().catch(()=>{});
+  scannerRef.current?.clear();
+
+      scannerRef.current = null;
+
+    }
+
+  } catch {}
 
   setMembers([]);
   setRegistrationId("");
@@ -104,7 +116,7 @@ await scannerRef.current?.stop();
 
   setTimeout(() => {
     startScanner();
-  }, 300);
+  }, 200);
 
 };
 
@@ -151,11 +163,9 @@ await scannerRef.current?.stop();
 
     <div className="p-6 flex flex-col items-center gap-6 mt-24">
 
-      {scanning && (
-        <Card className="p-4 w-full max-w-md">
-          <div id="reader"/>
-        </Card>
-      )}
+      <Card className={scanning ? "block" : "hidden"}>
+  <div id="reader"/>
+</Card>
 
       {!scanning && (
 
