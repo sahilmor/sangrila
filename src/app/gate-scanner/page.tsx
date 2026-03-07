@@ -18,14 +18,17 @@ export default function GateScannerPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [registrationId, setRegistrationId] = useState("");
   const [scanning, setScanning] = useState(true);
+  const [scanLock, setScanLock] = useState(false);
 
-  useEffect(() => {
+  const startScanner = async () => {
 
-    const scanner = new Html5Qrcode("reader");
+  if (!scannerRef.current) {
+    scannerRef.current = new Html5Qrcode("reader");
+  }
 
-    scannerRef.current = scanner;
+  try {
 
-    scanner.start(
+    await scannerRef.current.start(
       { facingMode: "environment" },
       {
         fps: 10,
@@ -37,14 +40,27 @@ export default function GateScannerPage() {
       () => {}
     );
 
-    return () => {
-      scanner.stop().catch(()=>{});
-    };
+  } catch (err) {
+    console.error("Scanner start error:", err);
+  }
 
-  }, []);
+};
+
+  useEffect(() => {
+
+  startScanner();
+
+  return () => {
+    scannerRef.current?.stop().catch(()=>{});
+  };
+
+}, []);
 
   const handleScan = async (decodedText:string) => {
 
+    if (scanLock) return; // prevent multiple triggers
+
+  setScanLock(true);
     try {
 
       const url = new URL(decodedText);
@@ -53,8 +69,10 @@ export default function GateScannerPage() {
       if (!regId) return;
 
       if (navigator.vibrate) {
-  navigator.vibrate([200, 50, 200]);
+  navigator.vibrate(200);
 }
+
+await scannerRef.current?.stop();
 
       setScanning(false);
 
@@ -77,13 +95,18 @@ export default function GateScannerPage() {
 
   };
 
-  const resetScanner = () => {
+  const resetScanner = async () => {
 
-    setMembers([]);
-    setRegistrationId("");
-    setScanning(true);
+  setMembers([]);
+  setRegistrationId("");
+  setScanning(true);
+  setScanLock(false);
 
-  };
+  setTimeout(() => {
+    startScanner();
+  }, 300);
+
+};
 
   const handleCheckIn = async (index:number) => {
 
