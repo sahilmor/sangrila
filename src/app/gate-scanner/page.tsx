@@ -101,7 +101,7 @@ const resetScanner = async () => {
     if (scannerRef.current) {
 
       await scannerRef.current.stop().catch(()=>{});
-  scannerRef.current?.clear();
+      scannerRef.current.clear();
 
       scannerRef.current = null;
 
@@ -163,9 +163,11 @@ const resetScanner = async () => {
 
     <div className="p-6 flex flex-col items-center gap-6 mt-24">
 
-      <Card className={scanning ? "block" : "hidden"}>
-  <div id="reader"/>
-</Card>
+      {scanning && (
+        <Card className="p-4 w-full max-w-md">
+          <div id="reader"/>
+        </Card>
+      )}
 
       {!scanning && (
 
