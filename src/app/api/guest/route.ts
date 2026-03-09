@@ -140,7 +140,7 @@ your <strong>QR entry pass</strong> will be sent to your email.
 
 <tr>
 <td style="padding:6px 0"><strong>Date</strong></td>
-<td>13 – 14 March 2026</td>
+<td>14 March 2026</td>
 </tr>
 
 <tr>

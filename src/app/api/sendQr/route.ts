@@ -107,7 +107,7 @@ Please present this QR code at the entry gate during the event.
 
 <tr>
 <td style="padding:6px 0"><strong>Date</strong></td>
-<td>13 – 14 March 2026</td>
+<td>14 March 2026</td>
 </tr>
 
 <tr>
